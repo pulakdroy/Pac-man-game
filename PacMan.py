@@ -9,6 +9,7 @@ restart_button_flag = False
 heart1_flag = False
 heart2_flag = False
 heart3_flag = False
+score = 0
 
 
 def drawpoints(x,y,size = 2):
@@ -366,6 +367,17 @@ def MouseListerner(button,state,x,y):
 
 
 
+def draw_score(score):
+   
+    glColor3f(0.0, 1.0, 0.0) 
+    glRasterPos2f(100, 230) 
+    
+    score_str = f"Score: {score}"
+    for char in score_str:
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(char))  
+
+
+
 def iterate():
     glViewport(0, 0, 500, 500)
     glMatrixMode(GL_PROJECTION)
@@ -393,7 +405,7 @@ def ShowScreen():
         draw_cross_button()
         print("GOODBYE..")
         glutLeaveMainLoop()
-
+    draw_score(score)
     heart1()
     heart2()
     heart3()
