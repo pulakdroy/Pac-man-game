@@ -261,6 +261,89 @@ def GameOver():
 
 
 
+maze_walls = [
+    # Outer boundary
+    ("horizontal", -220, 220, 220, 220),
+    ("horizontal", -220, -220, 220, -220),
+    ("vertical", -220, -220, -220, 220),
+    ("vertical", 220, -220, 220, 220),
+
+    # Top-left corner
+    ("horizontal", -200, 200, -100, 200),
+    ("vertical", -200, 200, -200, 100),
+    ("horizontal", -200, 100, -160, 100),
+    ("vertical", -160, 100, -160, 160),
+    ("horizontal", -160, 160, -100, 160),
+    ("vertical", -100, 200, -100, 160),
+
+    # Top-right corner
+    ("horizontal", 100, 200, 200, 200),
+    ("vertical", 200, 200, 200, 100),
+    ("horizontal", 160, 100, 200, 100),
+    ("vertical", 160, 100, 160, 160),
+    ("horizontal", 100, 160, 160, 160),
+    ("vertical", 100, 200, 100, 160),
+
+    # Bottom-left corner
+    ("horizontal", -200, -200, -100, -200),
+    ("vertical", -200, -200, -200, -100),
+    ("horizontal", -200, -100, -160, -100),
+    ("vertical", -160, -100, -160, -160),
+    ("horizontal", -160, -160, -100, -160),
+    ("vertical", -100, -200, -100, -160),
+
+    # Bottom-right corner
+    ("horizontal", 100, -200, 200, -200),
+    ("vertical", 200, -200, 200, -100),
+    ("horizontal", 160, -100, 200, -100),
+    ("vertical", 160, -100, 160, -160),
+    ("horizontal", 100, -160, 160, -160),
+    ("vertical", 100, -200, 100, -160),
+
+    # Central box
+    ("horizontal", -60, 20, 60, 20),
+    ("vertical", -60, 20, -60, -20),
+    ("horizontal", -60, -20, 60, -20),
+    ("vertical", 60, 20, 60, -20),
+
+    # Middle tunnels
+    ("horizontal", -220, 0, -160, 0),
+    ("horizontal", 160, 0, 220, 0),
+
+    # Other walls
+    ("horizontal", -60, 100, 60, 100),
+    ("horizontal", -60, -100, 60, -100),
+    ("vertical", -60, 100, -60, 60),
+    ("vertical", 60, 100, 60, 60),
+    ("vertical", -60, -60, -60, -100),
+    ("vertical", 60, -60, 60, -100),
+]
+
+
+
+
+def draw_maze_from_list(wall_list, point_size=2):
+    glColor3f(0.0, 0.0, 1.0)  # Set wall color to blue
+    for wall in wall_list:
+        wall_type, x_start, y_start, x_end, y_end = wall
+        if wall_type == "horizontal":
+            draw_horizontal_wall(x_start, x_end, y_start, point_size)
+        elif wall_type == "vertical":
+            draw_vertical_wall(y_start, y_end, x_start, point_size)
+
+
+def draw_horizontal_wall(x_start, x_end, y, point_size=2):
+    for x in range(x_start, x_end + 1):
+        drawpoints(x, y, point_size)
+
+def draw_vertical_wall(y_start, y_end, x, point_size=2):
+    for y in range(y_start, y_end + 1):
+        drawpoints(x, y, point_size)
+
+
+
+
+
 
 
 
@@ -298,6 +381,7 @@ def ShowScreen():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     iterate()
+    draw_maze_from_list(maze_walls)
     if play_button_flag:
         glColor3f(0.95, 0.96, 0.03)
         draw_play_button()
