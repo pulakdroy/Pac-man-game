@@ -263,60 +263,80 @@ def GameOver():
 
 maze_walls = [
     # Outer boundary
-    ("horizontal", -220, 220, 220, 220),
-    ("horizontal", -220, -220, 220, -220),
-    ("vertical", -220, -220, -220, 220),
-    ("vertical", 220, -220, 220, 220),
+    ("horizontal", -240, 240, 240, 240),
+    ("horizontal", -240, -240, 240, -240),
+    ("vertical", -240, -240, -240, 240),
+    ("vertical", 240, -240, 240, 240),
 
-    # Top-left corner
-    ("horizontal", -200, 200, -100, 200),
-    ("vertical", -200, 200, -200, 100),
-    ("horizontal", -200, 100, -160, 100),
+    # Top-left section
+    ("horizontal", -220, 200, -100, 200),
+    ("vertical", -220, 200, -220, 100),
+    ("horizontal", -220, 100, -160, 100),
     ("vertical", -160, 100, -160, 160),
     ("horizontal", -160, 160, -100, 160),
     ("vertical", -100, 200, -100, 160),
+    ("horizontal", -200, 40, -160, 40),
+    ("vertical", -160, 40, -160, 70),
 
-    # Top-right corner
-    ("horizontal", 100, 200, 200, 200),
-    ("vertical", 200, 200, 200, 100),
+    # Top-right section
+    ("horizontal", 100, 200, 220, 200),
+    ("vertical", 220, 200, 220, 100),
     ("horizontal", 160, 100, 200, 100),
     ("vertical", 160, 100, 160, 160),
     ("horizontal", 100, 160, 160, 160),
     ("vertical", 100, 200, 100, 160),
+    ("horizontal", 160, 50, 200, 50),
+    ("vertical", 200, 50, 200, 80),
 
-    # Bottom-left corner
-    ("horizontal", -200, -200, -100, -200),
-    ("vertical", -200, -200, -200, -100),
-    ("horizontal", -200, -100, -160, -100),
+    # Bottom-left section
+    ("horizontal", -220, -200, -100, -200),
+    ("vertical", -220, -200, -220, -100),
+    ("horizontal", -220, -100, -160, -100),
     ("vertical", -160, -100, -160, -160),
     ("horizontal", -160, -160, -100, -160),
     ("vertical", -100, -200, -100, -160),
+    ("horizontal", -200, -50, -160, -50),
+    ("vertical", -180, -50, -180, -80),
 
-    # Bottom-right corner
-    ("horizontal", 100, -200, 200, -200),
-    ("vertical", 200, -200, 200, -100),
-    ("horizontal", 160, -100, 200, -100),
+    # Bottom-right section
+    ("horizontal", 100, -200, 220, -200),
+    ("vertical", 220, -200, 220, -100),
+    ("horizontal", 160, -100, 220, -100),
     ("vertical", 160, -100, 160, -160),
     ("horizontal", 100, -160, 160, -160),
     ("vertical", 100, -200, 100, -160),
+    ("horizontal", 160, -50, 200, -50),
+    ("vertical", 200, -50, 200, -80),
 
-    # Central box
-    ("horizontal", -60, 20, 60, 20),
-    ("vertical", -60, 20, -60, -20),
-    ("horizontal", -60, -20, 60, -20),
-    ("vertical", 60, 20, 60, -20),
+    # Central region
+    ("horizontal", -80, 20, 80, 20),
+    ("vertical", -80, 20, -80, -20),
+    ("horizontal", -20, -20, 20, -20),
+    ("vertical", 80, 20, 80, -20),
+    ("horizontal", -40, 49, 40, 49),
+    ("horizontal", -65, -60, 65, -60),
+    ("vertical", -40, 60, -40, 20),
+    ("vertical", 40, 60, 40, 20),
+    ("vertical", -65, -60, -65, -20),
+    ("vertical", 65, -60, 65, -20),
 
-    # Middle tunnels
-    ("horizontal", -220, 0, -160, 0),
-    ("horizontal", 160, 0, 220, 0),
-
-    # Other walls
-    ("horizontal", -60, 100, 60, 100),
-    ("horizontal", -60, -100, 60, -100),
-    ("vertical", -60, 100, -60, 60),
-    ("vertical", 60, 100, 60, 60),
-    ("vertical", -60, -60, -60, -100),
-    ("vertical", 60, -60, 60, -100),
+    # Additional paths and dead ends
+    ("horizontal", -200, 0, -140, 0),
+    ("horizontal", 140, 0, 200, 0),
+    # ("horizontal", -60, 120, 60, 120),
+    ("horizontal", -60, -120, 60, -120),
+    ("vertical", -5, -120, 0, -190),               #line isn't showing
+    ("vertical", -120, 50, -120, -50),
+    ("vertical", 120, 50, 120, -50),
+    ("horizontal", -100, 80, 100, 80),
+    ("vertical", -5, 80, -5, 160),
+    # ("horizontal", 60, 80, 100, 80),
+    ("horizontal", -100, -88, -55, -88),
+    ("horizontal", 55, -88, 100, -88),
+    ("vertical", -100, 80, -100, 40),
+    ("vertical", 100, 80, 100, 40),
+    ("vertical", -100, -88, -100, -45),
+    ("vertical", 100, -88, 100, -45),
 ]
 
 
