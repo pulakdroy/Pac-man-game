@@ -326,7 +326,7 @@ maze_walls = [
     ("horizontal", 140, 0, 200, 0),
     # ("horizontal", -60, 120, 60, 120),
     ("horizontal", -60, -120, 60, -120),
-    ("vertical", -5, -120, 0, -190),               #line isn't showing
+    ("vertical",  0, -190,-5, -120),               #line isn't showing
     ("vertical", -120, 50, -120, -50),
     ("vertical", 120, 50, 120, -50),
     ("horizontal", -100, 80, 100, 80),
