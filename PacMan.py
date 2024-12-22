@@ -90,7 +90,7 @@ def convert_to_originalzone(originalzone,x,y):
 
 
 
-def MidpointLine(zone,x0,y0,x1,y1):
+def MidpointLine(zone,x0,y0,x1,y1,size):
     dx = x1-x0
     dy = y1-y0
     d = 2*dy-dx
@@ -100,7 +100,7 @@ def MidpointLine(zone,x0,y0,x1,y1):
     y = y0
     while x<x1:
         original_x,original_y = convert_to_originalzone(zone,x,y)
-        drawpoints(original_x,original_y)
+        drawpoints(original_x,original_y,size)
         if d<=0:
             d = d+E
             x = x+1
@@ -140,125 +140,125 @@ def MidpointCircle(r,xc,yc):
 
 
 
-def Eight_way_symmetry(x0,y0,x1,y1):
+def Eight_way_symmetry(x0,y0,x1,y1,size):
     if x0==x1:
         for y in range(int(min(y0, y1)), int(max(y0, y1)) + 1):
-            drawpoints(x0,y)
+            drawpoints(x0,y,size)
     elif y0==y1:
         for x in range(int(min(x0, x1)), int(max(x0, x1)) + 1):
-            drawpoints(x,y0)
+            drawpoints(x,y0,size)
     else:
         zone = FindZone(x0,y0,x1,y1)
         coverted_x0,converted_y0 = convert_to_zone0(zone,x0,y0)
         coverted_x1,coverted_y1 = convert_to_zone0(zone,x1,y1)
-        MidpointLine(zone,coverted_x0,converted_y0,coverted_x1,coverted_y1)
+        MidpointLine(zone,coverted_x0,converted_y0,coverted_x1,coverted_y1,size)
 
 
 
 def draw_play_button():
-    Eight_way_symmetry(-5, 240, 15, 230) 
-    Eight_way_symmetry(-5, 240, -5, 220) 
-    Eight_way_symmetry(-5, 220, 15, 230) 
+    Eight_way_symmetry(-5, 240, 15, 230,2) 
+    Eight_way_symmetry(-5, 240, -5, 220,2) 
+    Eight_way_symmetry(-5, 220, 15, 230,2) 
 
 
 
 def draw_pause_button():
-    Eight_way_symmetry(-5, 240, -5, 220)
-    Eight_way_symmetry(5, 240, 5, 220)
+    Eight_way_symmetry(-5, 240, -5, 220,2)
+    Eight_way_symmetry(5, 240, 5, 220,2)
 
 
 def draw_restart_button():
-    Eight_way_symmetry(-240, 230, -210, 230)
-    Eight_way_symmetry(-240, 230, -220, 240)
-    Eight_way_symmetry(-240, 230, -220, 220)
+    Eight_way_symmetry(-240, 230, -210, 230,2)
+    Eight_way_symmetry(-240, 230, -220, 240,2)
+    Eight_way_symmetry(-240, 230, -220, 220,2)
 
 
 def draw_cross_button():
-    Eight_way_symmetry(240, 240, 220, 220)
-    Eight_way_symmetry(220, 240, 240, 220)
+    Eight_way_symmetry(240, 240, 220, 220,2)
+    Eight_way_symmetry(220, 240, 240, 220,2)
 
 
 def heart1():
     glColor3f(1.0, 0.0, 0.0)
-    Eight_way_symmetry(220, 180, 232, 165) 
-    Eight_way_symmetry(220, 180, 226, 187)
-    Eight_way_symmetry(226, 187, 232, 180)
-    Eight_way_symmetry(244, 180, 238, 187)
-    Eight_way_symmetry(238, 187, 232, 180)
-    Eight_way_symmetry(232, 165, 244, 180)
-    Eight_way_symmetry(239, 187, 244, 180)
+    Eight_way_symmetry(220, 180, 232, 165,2) 
+    Eight_way_symmetry(220, 180, 226, 187,2)
+    Eight_way_symmetry(226, 187, 232, 180,2)
+    Eight_way_symmetry(244, 180, 238, 187,2)
+    Eight_way_symmetry(238, 187, 232, 180,2)
+    Eight_way_symmetry(232, 165, 244, 180,2)
+    Eight_way_symmetry(239, 187, 244, 180,2)
 
 def heart2():
     glColor3f(1.0, 0.0, 0.0)
-    Eight_way_symmetry(220, 140, 232, 125) 
-    Eight_way_symmetry(220, 140, 226, 147)
-    Eight_way_symmetry(226, 147, 232, 140)
-    Eight_way_symmetry(244, 140, 238, 147)
-    Eight_way_symmetry(238, 147, 232, 140)
-    Eight_way_symmetry(232, 125, 244, 140)
-    Eight_way_symmetry(239, 147, 244, 140)
+    Eight_way_symmetry(220, 140, 232, 125,2) 
+    Eight_way_symmetry(220, 140, 226, 147,2)
+    Eight_way_symmetry(226, 147, 232, 140,2)
+    Eight_way_symmetry(244, 140, 238, 147,2)
+    Eight_way_symmetry(238, 147, 232, 140,2)
+    Eight_way_symmetry(232, 125, 244, 140,2)
+    Eight_way_symmetry(239, 147, 244, 140,2)
 
 def heart3():
     glColor3f(1.0, 0.0, 0.0)
-    Eight_way_symmetry(220, 100, 232, 85) 
-    Eight_way_symmetry(220, 100, 226, 107)
-    Eight_way_symmetry(226, 107, 232, 100)
-    Eight_way_symmetry(244, 100, 238, 107)
-    Eight_way_symmetry(238, 107, 232, 100)
-    Eight_way_symmetry(232, 85, 244, 100)
-    Eight_way_symmetry(239, 107, 244, 100)
+    Eight_way_symmetry(220, 100, 232, 85,2) 
+    Eight_way_symmetry(220, 100, 226, 107,2)
+    Eight_way_symmetry(226, 107, 232, 100,2)
+    Eight_way_symmetry(244, 100, 238, 107,2)
+    Eight_way_symmetry(238, 107, 232, 100,2)
+    Eight_way_symmetry(232, 85, 244, 100,2)
+    Eight_way_symmetry(239, 107, 244, 100,2)
 
 
 
 def GameOver():
     # G
-    Eight_way_symmetry(-120, 50, -90, 50)  
-    Eight_way_symmetry(-120, 50, -120, 10)  
-    Eight_way_symmetry(-120, 10, -90, 10)  
-    Eight_way_symmetry(-90, 10, -90, 30)  
-    Eight_way_symmetry(-100, 30, -90, 30)  
+    Eight_way_symmetry(-120, 50, -90, 50,2)  
+    Eight_way_symmetry(-120, 50, -120, 10,2)  
+    Eight_way_symmetry(-120, 10, -90, 10,2)  
+    Eight_way_symmetry(-90, 10, -90, 30,2)  
+    Eight_way_symmetry(-100, 30, -90, 30,2)  
 
     # A
-    Eight_way_symmetry(-80, 10, -70, 50)  
-    Eight_way_symmetry(-70, 50, -60, 10)  
-    Eight_way_symmetry(-75, 30, -65, 30)  
+    Eight_way_symmetry(-80, 10, -70, 50,2)  
+    Eight_way_symmetry(-70, 50, -60, 10,2)  
+    Eight_way_symmetry(-75, 30, -65, 30,2)  
 
     # M
-    Eight_way_symmetry(-50, 10, -50, 50)  
-    Eight_way_symmetry(-50, 50, -40, 30)  
-    Eight_way_symmetry(-40, 30, -30, 50)  
-    Eight_way_symmetry(-30, 50, -30, 10)  
+    Eight_way_symmetry(-50, 10, -50, 50,2)  
+    Eight_way_symmetry(-50, 50, -40, 30,2)  
+    Eight_way_symmetry(-40, 30, -30, 50,2)  
+    Eight_way_symmetry(-30, 50, -30, 10,2)  
 
     # E
-    Eight_way_symmetry(-20, 10, -20, 50)  
-    Eight_way_symmetry(-20, 50, -10, 50)  
-    Eight_way_symmetry(-20, 30, -10, 30) 
-    Eight_way_symmetry(-20, 10, -10, 10)  
+    Eight_way_symmetry(-20, 10, -20, 50,2)  
+    Eight_way_symmetry(-20, 50, -10, 50,2)  
+    Eight_way_symmetry(-20, 30, -10, 30,2) 
+    Eight_way_symmetry(-20, 10, -10, 10,2)  
 
 
 
     # O
-    Eight_way_symmetry(0, 10, 0, 50)  
-    Eight_way_symmetry(20, 10, 20, 50)  
-    Eight_way_symmetry(0, 50, 20, 50)  
-    Eight_way_symmetry(0, 10, 20, 10)  
+    Eight_way_symmetry(0, 10, 0, 50,2)  
+    Eight_way_symmetry(20, 10, 20, 50,2)  
+    Eight_way_symmetry(0, 50, 20, 50,2)  
+    Eight_way_symmetry(0, 10, 20, 10,2)  
 
     # V
-    Eight_way_symmetry(30, 50, 40, 10)  
-    Eight_way_symmetry(40, 10, 50, 50)  
+    Eight_way_symmetry(30, 50, 40, 10,2)  
+    Eight_way_symmetry(40, 10, 50, 50,2)  
 
     # E
-    Eight_way_symmetry(60, 10, 60, 50)  
-    Eight_way_symmetry(60, 50, 70, 50)  
-    Eight_way_symmetry(60, 30, 70, 30)  
-    Eight_way_symmetry(60, 10, 70, 10)  
+    Eight_way_symmetry(60, 10, 60, 50,2)  
+    Eight_way_symmetry(60, 50, 70, 50,2)  
+    Eight_way_symmetry(60, 30, 70, 30,2)  
+    Eight_way_symmetry(60, 10, 70, 10,2)  
 
     # R
-    Eight_way_symmetry(80, 10, 80, 50)  
-    Eight_way_symmetry(80, 50, 90, 50)  
-    Eight_way_symmetry(90, 50, 90, 30)  
-    Eight_way_symmetry(80, 30, 90, 30)  
-    Eight_way_symmetry(80, 30, 91, 10)  
+    Eight_way_symmetry(80, 10, 80, 50,2)  
+    Eight_way_symmetry(80, 50, 90, 50,2)  
+    Eight_way_symmetry(90, 50, 90, 30,2)  
+    Eight_way_symmetry(80, 30, 90, 30,2)  
+    Eight_way_symmetry(80, 30, 91, 10,2)  
 
 
 
@@ -323,23 +323,20 @@ maze_walls = [
 
 
 
-def draw_maze_from_list(wall_list, point_size=2):
+def draw_maze_from_list(wall_list, size):
     glColor3f(0.0, 0.0, 1.0)  # Set wall color to blue
     for wall in wall_list:
         wall_type, x_start, y_start, x_end, y_end = wall
         if wall_type == "horizontal":
-            draw_horizontal_wall(x_start, x_end, y_start, point_size)
+            draw_horizontal_wall(x_start, x_end, y_start, size)
         elif wall_type == "vertical":
-            draw_vertical_wall(y_start, y_end, x_start, point_size)
+            draw_vertical_wall(y_start, y_end, x_start, size)
 
+def draw_horizontal_wall(x_start, x_end, y, size):
+    Eight_way_symmetry(x_start, y, x_end, y,size)
 
-def draw_horizontal_wall(x_start, x_end, y, point_size=2):
-    for x in range(x_start, x_end + 1):
-        drawpoints(x, y, point_size)
-
-def draw_vertical_wall(y_start, y_end, x, point_size=2):
-    for y in range(y_start, y_end + 1):
-        drawpoints(x, y, point_size)
+def draw_vertical_wall(y_start, y_end, x, size):
+    Eight_way_symmetry(x, y_start, x, y_end,size)
 
 
 
@@ -393,7 +390,7 @@ def ShowScreen():
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     iterate()
-    draw_maze_from_list(maze_walls)
+    draw_maze_from_list(maze_walls,size=2)
     if play_button_flag:
         glColor3f(0.95, 0.96, 0.03)
         draw_play_button()
