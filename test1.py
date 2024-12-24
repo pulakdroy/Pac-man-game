@@ -22,6 +22,7 @@ heart1_flag = False
 heart2_flag = False
 heart3_flag = False
 score = 0
+r,g,b = 0,0,0
 
 
 def drawpoints(x,y,size = 2):
@@ -489,7 +490,7 @@ def pacman_move():
 
 
 def keyBoardListerner(key,x,y):
-    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag
+    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,r,g,b
 
     if not game_over_flag:
         if key == b'a':
@@ -501,6 +502,13 @@ def keyBoardListerner(key,x,y):
             pacman_up_flag = True
         elif key==b's':
             pacman_down_flag = True
+
+        if key==b'm':
+            r,g,b = 1,1,1
+            glClearColor(r,g,b,1)
+        if key==b'n':
+            r,g,b = 0,0,0
+            glClearColor(r,g,b,1)
 
 
 def pacman_key_released(key, x, y):
@@ -620,4 +628,5 @@ glutIdleFunc(pacman_move)
 glutMouseFunc(MouseListerner)
 glutKeyboardFunc(keyBoardListerner)
 glutKeyboardUpFunc(pacman_key_released)
+glClearColor(r,g,b,1)
 glutMainLoop()
