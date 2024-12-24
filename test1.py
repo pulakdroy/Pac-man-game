@@ -2,6 +2,7 @@ pacman_x = 0
 pacman_y = 0
 pacman_radius = 9
 pacman_speed = 3
+pacman_angle = 0
 pacman_up_flag = False
 pacman_down_flag = False
 pacman_left_flag = False
@@ -13,6 +14,7 @@ from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import math
 import time
+import copy
 
 game_over_flag = False
 play_button_flag = False
@@ -22,7 +24,7 @@ heart1_flag = False
 heart2_flag = False
 heart3_flag = False
 score = 0
-r,g,b = 0,0,0
+
 
 
 def drawpoints(x,y,size = 2):
@@ -401,6 +403,8 @@ food = [(-200,-200),(-180,-200),(-160,-200),(-140,-200),(-120,-200),(-100,-200),
 
 ]
 
+food1 = copy.deepcopy(food)
+
 
 
 
@@ -463,7 +467,7 @@ def draw_vertical_wall(y_start, y_end, x, size):
 
 
 def pacman_move():
-    global pacman_x, pacman_y,pacman_radius,score,food,play_button_flag
+    global pacman_x, pacman_y,pacman_speed,pacman_radius,score,food,play_button_flag
 
     new_x = pacman_x
     new_y = pacman_y
@@ -490,25 +494,30 @@ def pacman_move():
 
 
 def keyBoardListerner(key,x,y):
-    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,r,g,b
+    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,pacman_angle
 
     if not game_over_flag:
-        if key == b'a':
+        if not play_button_flag:
+            if key == b'a':
                 pacman_left_flag = True
-                
-        elif key == b'd':
+                pacman_angle = math.radians(180)
+                    
+            elif key == b'd':
                 pacman_right_flag = True
-        elif key==b'w':
-            pacman_up_flag = True
-        elif key==b's':
-            pacman_down_flag = True
+                pacman_angle = math.radians(0)
 
-        if key==b'm':
-            r,g,b = 1,1,1
-            glClearColor(r,g,b,1)
-        if key==b'n':
-            r,g,b = 0,0,0
-            glClearColor(r,g,b,1)
+            elif key==b'w':
+                pacman_up_flag = True
+                pacman_angle = math.radians(90)
+
+            elif key==b's':
+                pacman_down_flag = True
+                pacman_angle = math.radians(270)
+
+            if key==b'm':
+                glClearColor(1,1,1,1)
+            if key==b'n':
+                glClearColor(0,0,0,1)
 
 
 def pacman_key_released(key, x, y):
@@ -547,17 +556,28 @@ def MouseListerner(button,state,x,y):
 
 
 
-def draw_pacman(x,y,radius):
-    glColor3f(1,1,0)
-    MidpointCircle(radius,x,y)
+def draw_pacman(x, y, radius, angle=0):
+    glColor3f(1, 1, 0)  # Yellow color for Pac-Man
+
+    # Convert the mouth angle to radians
+    mouth_angle = math.radians(35)  # Angle of the open mouth (30 degrees on each side)
+
+    # Calculate start and end angles of the mouth based on Pac-Man's orientation
+    start_angle = angle - mouth_angle
+    end_angle = angle + mouth_angle
+
     for i in range(-radius, radius + 1):  # x-offset
         for j in range(-radius, radius + 1):  # y-offset
             # Check if the point lies inside the circle
             if i**2 + j**2 <= radius**2:
-                glBegin(GL_POINTS)
-                glVertex2f(x + i, y + j)
-                glEnd()
+                # Convert the point to polar coordinates (angle)
+                point_angle = math.atan2(j, i)
 
+                # Check if the point is outside the mouth region
+                if not (start_angle <= point_angle <= end_angle):
+                    glBegin(GL_POINTS)
+                    glVertex2f(x + i, y + j)
+                    glEnd()
 
 def draw_score(score):
    
@@ -567,6 +587,11 @@ def draw_score(score):
     score_str = f"Score: {score}"
     for char in score_str:
         glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(char))  
+
+
+def animate_pacman():
+    global pacman_x, pacman_y, pacman_radius, pacman_angle
+    draw_pacman(pacman_x, pacman_y, pacman_radius, pacman_angle)
 
 def timer(value):
     glutPostRedisplay()
@@ -583,13 +608,33 @@ def iterate():
 
 
 def ShowScreen():
-    global heart1_flag, heart2_flag, heart3_flag
+    global heart1_flag, heart2_flag, heart3_flag,pacman_x,pacman_y,pacman_angle,score,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,game_over_flag,play_button_flag,cross_button_flag,restart_button_flag,food1,food
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     iterate()
+
     draw_maze(maze_walls,size=5)
     draw_food(food,2)
-    draw_pacman(pacman_x, pacman_y, pacman_radius)
+    animate_pacman()
+    if restart_button_flag:
+        print('Start Over!!')
+        food = copy.deepcopy(food1)
+        pacman_x=0
+        pacman_y=0
+        pacman_angle=0
+        score = 0
+        pacman_up_flag = False
+        pacman_down_flag = False
+        pacman_left_flag = False    
+        pacman_right_flag = False
+
+        game_over_flag = False
+        play_button_flag = False
+        cross_button_flag = False
+        restart_button_flag = False
+        heart1_flag = False
+        heart2_flag = False
+        heart3_flag = False
     if game_over_flag:
         GameOver()
     if play_button_flag:
@@ -628,5 +673,5 @@ glutIdleFunc(pacman_move)
 glutMouseFunc(MouseListerner)
 glutKeyboardFunc(keyBoardListerner)
 glutKeyboardUpFunc(pacman_key_released)
-glClearColor(r,g,b,1)
+glClearColor(0,0,0,1)
 glutMainLoop()
