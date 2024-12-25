@@ -14,6 +14,8 @@ ghost_radius = 9
 ghost_speed = 3
 ghost_left_flag = False
 ghost_right_flag = False
+ghost_up_flag = False
+ghost_down_flag = False
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
@@ -513,7 +515,7 @@ def pacman_move():
 
 # Movement logic for Ghost
 def move_ghost():
-    global ghost_x, ghost_y, ghost_left_flag, ghost_right_flag, ghost_speed
+    global ghost_x, ghost_y, ghost_left_flag, ghost_right_flag, ghost_speed,ghost_up_flag,ghost_down_flag
 
     # Update position based on flags
     if ghost_left_flag:

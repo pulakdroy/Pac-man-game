@@ -24,6 +24,7 @@ heart1_flag = False
 heart2_flag = False
 heart3_flag = False
 score = 0
+lives = 3
 
 
 
@@ -274,6 +275,8 @@ def GameOver():
     Eight_way_symmetry(90, 50, 90, 30,2)  
     Eight_way_symmetry(80, 30, 90, 30,2)  
     Eight_way_symmetry(80, 30, 91, 10,2)  
+    glColor3f(1,0,0)
+    draw_cross_button()
 
 
 
@@ -579,6 +582,201 @@ def draw_pacman(x, y, radius, angle=0):
                     glVertex2f(x + i, y + j)
                     glEnd()
 
+
+
+
+
+
+
+# Global list to store ghost states
+ghosts = []
+
+def spawn_ghost(x, y, size, direction="horizontal"):
+    """
+    Spawns a ghost at the given coordinates and adds it to the list of ghosts.
+    Args:
+        x (float): Initial x-coordinate of the ghost.
+        y (float): Initial y-coordinate of the ghost.
+        size (int): Size of the ghost (radius of the circle).
+        direction (str): Movement direction ("horizontal" or "vertical").
+    """
+    global ghosts
+    ghosts.append({
+        "x": x,
+        "y": y,
+        "size": size,
+        "direction": direction,
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+    })
+
+def draw_ghost(ghost):
+    """
+    Draws a single ghost on the screen using GL_POINTS.
+    Args:
+        ghost (dict): Ghost's state containing position, size, and direction.
+    """
+    glColor3f(1, 0, 0)  # Red color for the ghost
+
+    # Draw a circular ghost using points
+    for i in range(-ghost["size"], ghost["size"] + 1):
+        for j in range(-ghost["size"], ghost["size"] + 1):
+            if i**2 + j**2 <= ghost["size"]**2:  # Check if point is inside the circle
+                glBegin(GL_POINTS)
+                glVertex2f(ghost["x"] + i, ghost["y"] + j)
+                glEnd()
+
+def move_ghost(ghost):
+    """
+    Moves a ghost either left-right or up-down based on its direction.
+    Args:
+        ghost (dict): Ghost's state containing position, size, and direction.
+    """
+    movement_speed = 2  # Adjust the speed of ghost movement
+
+    if ghost["direction"] == "horizontal":
+        if ghost["moving_right"]:
+            ghost["x"] += movement_speed
+            # Reverse direction if reaching boundary
+            if ghost["x"] >= 400:  # Replace 400 with your screen width boundary
+                ghost["moving_right"] = False
+        else:
+            ghost["x"] -= movement_speed
+            if ghost["x"] <= -400:  # Replace -400 with your screen width boundary
+                ghost["moving_right"] = True
+    elif ghost["direction"] == "vertical":
+        if ghost["moving_up"]:
+            ghost["y"] += movement_speed
+            if ghost["y"] >= 300:  # Replace 300 with your screen height boundary
+                ghost["moving_up"] = False
+        else:
+            ghost["y"] -= movement_speed
+            if ghost["y"] <= -300:  # Replace -300 with your screen height boundary
+                ghost["moving_up"] = True
+
+def animate_ghosts():
+    """
+    Animates all ghosts by updating their positions and drawing them.
+    """
+    global ghosts
+    for ghost in ghosts:
+        move_ghost(ghost)
+        draw_ghost(ghost)
+
+
+
+
+
+
+
+
+ghosts = []
+
+def spawn_ghost(x, y, size, direction="horizontal"):
+    global ghosts
+    ghosts.append({
+        "x": x,
+        "y": y,
+        "radius": size,
+        "direction": direction,
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+    })
+
+def draw_ghost(x, y, radius):
+    glColor3f(1, 0, 0)  
+    MidpointCircle(radius,x,y)
+
+
+def move_ghost(ghost, maze_walls):
+    """
+    Moves a ghost either left-right or up-down based on its direction.
+    Args:
+        ghost (dict): Ghost's state containing position, size, and direction.
+        maze_walls (list): List of maze walls for collision detection.
+    """
+    movement_speed = 5  # Adjust the speed of ghost movement
+    if not game_over_flag:
+        if not play_button_flag:
+
+            if ghost["direction"] == "horizontal":
+                if ghost["moving_right"]:
+                    ghost["x"] += movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["x"] -= movement_speed  # Undo movement
+                        ghost["moving_right"] = False  # Reverse direction
+                else:
+                    ghost["x"] -= movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["x"] += movement_speed  # Undo movement
+                        ghost["moving_right"] = True  # Reverse direction
+            elif ghost["direction"] == "vertical":
+                if ghost["moving_up"]:
+                    ghost["y"] += movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["y"] -= movement_speed  # Undo movement
+                        ghost["moving_up"] = False  # Reverse direction
+                else:
+                    ghost["y"] -= movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["y"] += movement_speed  # Undo movement
+                        ghost["moving_up"] = True  # Reverse direction
+
+
+
+
+def check_pacman_ghost_collision(pacman_x, pacman_y, pacman_radius, ghost_x, ghost_y, ghost_radius):
+    distance = math.sqrt((pacman_x - ghost_x)**2 + (pacman_y - ghost_y)**2)
+    return distance < (pacman_radius + ghost_radius)
+
+
+
+
+
+def animate_ghosts(maze_walls):
+    global ghosts, pacman_x, pacman_y, pacman_radius, lives,heart1_flag,heart2_flag,heart3_flag,game_over_flag
+
+    for ghost in ghosts:
+        move_ghost(ghost, maze_walls)
+        draw_ghost(ghost["x"], ghost["y"], ghost["radius"])
+
+        # Check for collision with Pac-Man
+        if check_pacman_ghost_collision(pacman_x, pacman_y, pacman_radius, ghost["x"], ghost["y"], ghost["radius"]):
+            lives -= 1  # Deduct one life
+            if lives==2:
+                heart3_flag = True
+                print(f"Lives remaining: {lives}")
+            if lives==1:
+                heart2_flag = True
+                heart3_flag = True
+                print(f"Lives remaining: {lives}")
+
+
+            if lives == 0:
+                heart1_flag = True
+                heart2_flag = True
+                heart3_flag = True
+                print(f"Lives remaining: {lives}")
+                print("Game Over!")
+                game_over_flag = True
+            else:
+                # Optionally, reset Pac-Man's position after losing a life
+                pacman_x, pacman_y = 0, 0  # Reset Pac-Man to the center
+    
+
+
+
+
+
+
+
+
+
+
+
+
+                    
+
 def draw_score(score):
    
     glColor3f(0.0, 1.0, 0.0) 
@@ -605,7 +803,7 @@ def iterate():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
-
+spawn_ghost(-10,120,8,'horizontal')
 
 def ShowScreen():
     global heart1_flag, heart2_flag, heart3_flag,pacman_x,pacman_y,pacman_angle,score,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,game_over_flag,play_button_flag,cross_button_flag,restart_button_flag,food1,food
@@ -613,6 +811,7 @@ def ShowScreen():
     glLoadIdentity()
     iterate()
 
+    animate_ghosts(maze_walls)
     draw_maze(maze_walls,size=5)
     draw_food(food,2)
     animate_pacman()
@@ -623,6 +822,7 @@ def ShowScreen():
         pacman_y=0
         pacman_angle=0
         score = 0
+        lives = 3
         pacman_up_flag = False
         pacman_down_flag = False
         pacman_left_flag = False    
@@ -637,6 +837,7 @@ def ShowScreen():
         heart3_flag = False
     if game_over_flag:
         GameOver()
+
     if play_button_flag:
         glColor3f(0.95, 0.96, 0.03)
         draw_play_button()
@@ -648,10 +849,15 @@ def ShowScreen():
         draw_cross_button()
         print("GOODBYE..")
         glutLeaveMainLoop()
+
+        
     draw_score(score)
-    heart1()
-    heart2()
-    heart3()
+    if not heart1_flag:
+        heart1()
+    if not heart2_flag:
+        heart2()
+    if not heart3_flag:
+        heart3()
     draw_cross_button()
     glColor3f(1,1,0)
     glColor3f(0,1,1)
