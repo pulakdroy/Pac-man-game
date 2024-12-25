@@ -613,79 +613,15 @@ def spawn_ghost(x, y, size, direction="horizontal"):
     ghosts.append({
         "x": x,
         "y": y,
-        "size": size,
-        "direction": direction,
-        "moving_right": True,  # For horizontal movement
-        "moving_up": True      # For vertical movement
-    })
-
-def draw_ghost(ghost):
-    glColor3f(1, 0, 0)  # Red color for the ghost
-
-    # Draw a circular ghost using points
-    for i in range(-ghost["size"], ghost["size"] + 1):
-        for j in range(-ghost["size"], ghost["size"] + 1):
-            if i**2 + j**2 <= ghost["size"]**2:  # Check if point is inside the circle
-                glBegin(GL_POINTS)
-                glVertex2f(ghost["x"] + i, ghost["y"] + j)
-                glEnd()
-
-def move_ghost(ghost):
-    """
-    Moves a ghost either left-right or up-down based on its direction.
-    Args:
-        ghost (dict): Ghost's state containing position, size, and direction.
-    """
-    movement_speed = 2  # Adjust the speed of ghost movement
-
-    if ghost["direction"] == "horizontal":
-        if ghost["moving_right"]:
-            ghost["x"] += movement_speed
-            # Reverse direction if reaching boundary
-            if ghost["x"] >= 400:  # Replace 400 with your screen width boundary
-                ghost["moving_right"] = False
-        else:
-            ghost["x"] -= movement_speed
-            if ghost["x"] <= -400:  # Replace -400 with your screen width boundary
-                ghost["moving_right"] = True
-    elif ghost["direction"] == "vertical":
-        if ghost["moving_up"]:
-            ghost["y"] += movement_speed
-            if ghost["y"] >= 300:  # Replace 300 with your screen height boundary
-                ghost["moving_up"] = False
-        else:
-            ghost["y"] -= movement_speed
-            if ghost["y"] <= -300:  # Replace -300 with your screen height boundary
-                ghost["moving_up"] = True
-
-def animate_ghosts():
-    """
-    Animates all ghosts by updating their positions and drawing them.
-    """
-    global ghosts
-    for ghost in ghosts:
-        move_ghost(ghost)
-        draw_ghost(ghost)
-
-
-
-
-
-
-
-
-ghosts = []
-
-def spawn_ghost(x, y, size, direction="horizontal"):
-    global ghosts
-    ghosts.append({
-        "x": x,
-        "y": y,
         "radius": size,
         "direction": direction,
         "moving_right": True,  # For horizontal movement
         "moving_up": True      # For vertical movement
     })
+
+
+
+
 
 def draw_ghost(x, y, radius):
     glColor3f(1, 0, 0)  
