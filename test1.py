@@ -420,6 +420,22 @@ def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
         if distance < food_radius + pacman_radius:
             food.remove(i)  # Remove the eaten food by value
             score += 1
+            if score==30:
+                print('Level 2')
+                spawn_ghost(-125,10,10,'vertical')
+            if score==70:
+                print('Level 3')
+                spawn_ghost(0,-200,10,'horizontal')
+            if score==130:
+                print('Level 4')
+                spawn_ghost(120,0,10,'vertical')
+                spawn_ghost(-125,200,10,'horizontal')
+
+            if score==200:
+                print('Level 5')
+                spawn_ghost(25,170,10,'vertical')
+                spawn_ghost(0,-40,10,'horizontal')
+
             if score==227:
                 game_over_flag=True
             return True
@@ -518,7 +534,7 @@ def keyBoardListerner(key,x,y):
                 pacman_angle = math.radians(270)
 
             if key==b'm':
-                glClearColor(1,1,1,1)
+                glClearColor(0.8,0.8,0.8,1)
             if key==b'n':
                 glClearColor(0,0,0,1)
 
@@ -592,14 +608,6 @@ def draw_pacman(x, y, radius, angle=0):
 ghosts = []
 
 def spawn_ghost(x, y, size, direction="horizontal"):
-    """
-    Spawns a ghost at the given coordinates and adds it to the list of ghosts.
-    Args:
-        x (float): Initial x-coordinate of the ghost.
-        y (float): Initial y-coordinate of the ghost.
-        size (int): Size of the ghost (radius of the circle).
-        direction (str): Movement direction ("horizontal" or "vertical").
-    """
     global ghosts
     ghosts.append({
         "x": x,
@@ -611,11 +619,6 @@ def spawn_ghost(x, y, size, direction="horizontal"):
     })
 
 def draw_ghost(ghost):
-    """
-    Draws a single ghost on the screen using GL_POINTS.
-    Args:
-        ghost (dict): Ghost's state containing position, size, and direction.
-    """
     glColor3f(1, 0, 0)  # Red color for the ghost
 
     # Draw a circular ghost using points
@@ -689,12 +692,6 @@ def draw_ghost(x, y, radius):
 
 
 def move_ghost(ghost, maze_walls):
-    """
-    Moves a ghost either left-right or up-down based on its direction.
-    Args:
-        ghost (dict): Ghost's state containing position, size, and direction.
-        maze_walls (list): List of maze walls for collision detection.
-    """
     movement_speed = 5  # Adjust the speed of ghost movement
     if not game_over_flag:
         if not play_button_flag:
@@ -803,10 +800,13 @@ def iterate():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
-spawn_ghost(-10,120,8,'horizontal')
+spawn_ghost(-10,120,10,'horizontal')
+spawn_ghost(40,-125,10,'horizontal')
+spawn_ghost(-80,0,10,'vertical')
+
 
 def ShowScreen():
-    global heart1_flag, heart2_flag, heart3_flag,pacman_x,pacman_y,pacman_angle,score,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,game_over_flag,play_button_flag,cross_button_flag,restart_button_flag,food1,food
+    global heart1_flag, heart2_flag, heart3_flag,pacman_x,pacman_y,pacman_angle,score,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,game_over_flag,play_button_flag,cross_button_flag,restart_button_flag,food1,food,lives,ghosts
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     iterate()
@@ -816,6 +816,36 @@ def ShowScreen():
     draw_food(food,2)
     animate_pacman()
     if restart_button_flag:
+        ghosts=[]
+        ghosts.append(({
+        "x": -10,
+        "y": 120,
+        "radius": 10,
+        "direction": 'horizontal',
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+        }))
+
+        ghosts.append(({
+        "x": 40,
+        "y": -125,
+        "radius": 10,
+        "direction": 'horizontal',
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+        }))
+
+        ghosts.append(({
+        "x": -80,
+        "y": 0,
+        "radius": 10,
+        "direction": 'vertical',
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+        }))
+        
+        
+
         print('Start Over!!')
         food = copy.deepcopy(food1)
         pacman_x=0
@@ -846,7 +876,6 @@ def ShowScreen():
         draw_pause_button()
     
     if cross_button_flag:
-        draw_cross_button()
         print("GOODBYE..")
         glutLeaveMainLoop()
 
@@ -858,9 +887,11 @@ def ShowScreen():
         heart2()
     if not heart3_flag:
         heart3()
+    glColor3f(1,0,0)
     draw_cross_button()
     glColor3f(1,1,0)
     glColor3f(0,1,1)
+
     draw_restart_button()
     glutSwapBuffers()
     glutPostRedisplay()
