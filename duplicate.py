@@ -1,12 +1,19 @@
-pacman_x = -200
-pacman_y = -200
+pacman_x = 0
+pacman_y = 0
 pacman_radius = 9
-pacman_speed = 1.5
+pacman_speed = 3
 pacman_up_flag = False
 pacman_down_flag = False
 pacman_left_flag = False
 pacman_right_flag = False
 
+
+ghost_x = 0
+ghost_y = 0
+ghost_radius = 9
+ghost_speed = 3
+ghost_left_flag = False
+ghost_right_flag = False
 
 from OpenGL.GL import *
 from OpenGL.GLUT import *
@@ -22,6 +29,7 @@ heart1_flag = False
 heart2_flag = False
 heart3_flag = False
 score = 0
+r,g,b = 0,0,0
 
 
 def drawpoints(x,y,size = 2):
@@ -165,6 +173,13 @@ def Eight_way_symmetry(x0,y0,x1,y1,size):
         coverted_x1,coverted_y1 = convert_to_zone0(zone,x1,y1)
         MidpointLine(zone,coverted_x0,converted_y0,coverted_x1,coverted_y1,size)
 
+def draw_theme_button():
+    # Draw a simple button for theme toggle
+    # Example using Eight-way symmetry (adjust as needed)
+    Eight_way_symmetry(200, 210, 220, 210, 3)  # Draw top-right button (for theme toggle)
+    Eight_way_symmetry(220, 210, 220, 230, 3)
+    Eight_way_symmetry(220, 230, 200, 230, 3)
+    Eight_way_symmetry(200, 230, 200, 210, 3)
 
 
 def draw_play_button():
@@ -362,27 +377,58 @@ maze_walls = [
 
 
 
-# Define the range of the window
-x_start, x_end, step = -200, 200, 20
-y_start, y_end = -200, 200
+food = [(-200,-200),(-180,-200),(-160,-200),(-140,-200),(-120,-200),(-100,-200),
+        (-80,-200),(-60,-200),(-40,-200),(-20,-200),(0,-200),(20,-200),(40,-200),
+        (60,-200),(80,-200),(100,-200),(120,-200),(140,-200),(160,-200),(180,-200),(200,-200),
 
-# Generate all coordinates for the grid
-food = [(x, y) for x in range(x_start, x_end + step, step) for y in range(y_start, y_end + step, step)]
+        (-200,-180),(-200,-160),(-180,-160),(-160,-160),(-140,-160),(-120,-160),(-120,-140),
+        (-120,-120),(-120,-100),(-120,-80),(-120,-60),(-120,-40),(-120,-20),(-120,0),(-120,20),
+        (-120,40),(-120,60),(-120,80),(-120,100),(-120,120),(-140,120),(-160,120),(-180,120),(-200,120),
+        (-200,140),(-200,160),(-200,180),(-200,200),(-180,200),(-160,200),(-140,200),(-120,200),(-100,200),(-80,200),(-60,200),(-40,200),(-20,200),
+        (-20,180),(-20,160),(-20,120),(-40,120),(-60,120),(-80,120),(-100,120),(0,120),
+        (-40,160),(-60,160),(-80,160),(-100,160),(-120,160),(-140,160),(-160,160),(-180,160),(-130,180),(-70,140),(-50,140),
+        (-140,15),(-160,15),(-180,15),(-200,15),
+        (-100,15),(-80,15),(-60,15),(-80,-5),(-80,-25),(-80,-45),(-80,-65),(-80,-85),
+        (-80,40),(-60,40),(-40,40),(-20,40),(20,40),(40,40),(60,40),
+        (-20,60),(-20,80),(-40,80),(-60,80),(-80,80),
+        (-60,-40),(-40,-40),(-20,-40),(0,-40),(20,-40),(40,-40),(60,-40),
+        (-60,-85),(-40,-85),(-20,-85),(20,-85),(40,-85),(60,-85),
+        (-40,-105),(-40,-125),(40,-105),(40,-125),(-60,-125),(-80,-125),(-100,-125),
+        (-20,-125),(0,-125),(20,-125),(60,-125),(80,-125),(100,-125),
+        (-140,-90),(-160,-90),(-180,-90),(-200,-90),(-200,-110),(-200,-130),(-180,-130),(-160,-130),
+        (140,-90),(160,-90),(180,-90),(200,-90),(200,-110),(200,-130),(180,-130),(160,-130),
+        (-80,-145),(-80,-165),(-60,-165),(-40,-165),(-20,-165),
+        (80,-145),(80,-165),(60,-165),(40,-165),(20,-165),
 
-# Print the coordinates
-# print(coordinates)
+
+        (200,-180),(200,-160),(180,-160),(160,-160),(140,-160),(120,-160),(120,-140),
+        (120,-120),(120,-100),(120,-80),(120,-60),(120,-40),(120,-20),(120,0),(120,20),
+        (120,40),(120,60),(120,80),(120,100),(120,120),(140,120),(160,120),(180,120),(200,120),
+        (200,140),(200,160),(200,180),(200,200),(180,200),(160,200),(140,200),(120,200),(100,200),(80,200),(60,200),(40,200),(20,200),
+        (20,180),(20,160),(20,140),(20,120),(40,120),(60,120),(80,120),(100,120),
+        (40,160),(60,160),(80,160),(100,160),(120,160),(140,160),(160,160),(180,160),(130,180),(70,140),(50,140),
+        (140,15),(160,15),(180,15),(200,15),
+        (100,15),(80,15),(60,15),(80,-5),(80,-25),(80,-45),(80,-65),(80,-85),
+        (80,40),(20,60),(20,80),(40,80),(60,80),(80,80)
+
+
+
+]
+
 
 
 
 
 def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
-    global score
+    global score,game_over_flag
     for i in food[:]:  # Loop over a copy of the list to avoid issues when modifying the list
         x, y = i
         distance = math.sqrt((pacman_x - x) ** 2 + (pacman_y - y) ** 2)
         if distance < food_radius + pacman_radius:
             food.remove(i)  # Remove the eaten food by value
             score += 1
+            if score==227:
+                game_over_flag=True
             return True
     return False
 
@@ -421,29 +467,41 @@ def draw_maze(wall_list, size):
         elif wall_type == "vertical":
             draw_vertical_wall(y_start, y_end, x_start, size)
 
+
 def draw_horizontal_wall(x_start, x_end, y, size):
     Eight_way_symmetry(x_start, y, x_end, y,size)
+
 
 def draw_vertical_wall(y_start, y_end, x, size):
     Eight_way_symmetry(x, y_start, x, y_end,size)
 
 
+current_theme = "day"  # Default theme is day
+
+def toggle_theme():
+    global current_theme
+    if current_theme == "day":
+        current_theme = "night"
+        glClearColor(0.1, 0.1, 0.1, 1.0)  # Set background color to dark for night
+    else:
+        current_theme = "day"
+        glClearColor(1.0, 1.0, 1.0, 1.0)  # Set background color to light for day
 
 
 def pacman_move():
-    global pacman_x, pacman_y,pacman_radius,score,food
+    global pacman_x, pacman_y,pacman_radius,score,food,play_button_flag
 
     new_x = pacman_x
     new_y = pacman_y
-
-    if pacman_up_flag:
-        new_y += pacman_speed
-    if pacman_down_flag:
-        new_y -= pacman_speed
-    if pacman_left_flag:
-        new_x -= pacman_speed
-    if pacman_right_flag:
-        new_x += pacman_speed
+    if not play_button_flag:
+        if pacman_up_flag:
+            new_y += pacman_speed
+        if pacman_down_flag:
+            new_y -= pacman_speed
+        if pacman_left_flag:
+            new_x -= pacman_speed
+        if pacman_right_flag:
+            new_x += pacman_speed
 
     # Check for collision before updating position
     if not check_wall_collision(new_x, new_y, maze_walls, pacman_radius):
@@ -452,13 +510,93 @@ def pacman_move():
 
     eat_food(pacman_x,pacman_y,pacman_radius,food)
 
- 
+
+# Movement logic for Ghost
+def move_ghost():
+    global ghost_x, ghost_y, ghost_left_flag, ghost_right_flag, ghost_speed
+
+    # Update position based on flags
+    if ghost_left_flag:
+        ghost_x -= ghost_speed
+    if ghost_right_flag:
+        ghost_x += ghost_speed
+    if ghost_up_flag:
+        ghost_y += ghost_speed
+    if ghost_down_flag:
+        ghost_y -= ghost_speed
+
+    # Ensure the ghost stays within the screen bounds (if needed)
+    if ghost_x < -220:
+        ghost_x = -220  # Left boundary
+        ghost_left_flag = False
+        ghost_right_flag = True
+    elif ghost_x > 220:
+        ghost_x = 220  # Right boundary
+        ghost_left_flag = True
+        ghost_right_flag = False
+
+    if ghost_y < -220:
+        ghost_y = -220  # Bottom boundary
+        ghost_down_flag = False
+        ghost_up_flag = True
+    elif ghost_y > 220:
+        ghost_y = 220  # Top boundary
+        ghost_up_flag = False
+        ghost_down_flag = True
+
+import random
+import time
+
+# Function to randomly change the ghost's direction after a certain interval
+def random_direction():
+    global ghost_left_flag, ghost_right_flag, ghost_up_flag, ghost_down_flag
+    # Randomly choose a new direction for the ghost to move
+    direction = random.choice(['left', 'right', 'up', 'down'])
+
+    if direction == 'left':
+        ghost_left_flag = True
+        ghost_right_flag = False
+        ghost_up_flag = False
+        ghost_down_flag = False
+    elif direction == 'right':
+        ghost_right_flag = True
+        ghost_left_flag = False
+        ghost_up_flag = False
+        ghost_down_flag = False
+    elif direction == 'up':
+        ghost_up_flag = True
+        ghost_down_flag = False
+        ghost_left_flag = False
+        ghost_right_flag = False
+    elif direction == 'down':
+        ghost_down_flag = True
+        ghost_up_flag = False
+        ghost_left_flag = False
+        ghost_right_flag = False
+
+# Call the random_direction function at regular intervals
+def update():
+    global game_over_flag
+    if not game_over_flag:
+        random_direction()
+        move_ghost()
+    # Redraw the screen or do any other updates
+    time.sleep(1)  # Adjust the time to control how often the ghost changes direction
+
+
+def game_loop():
+    global game_over_flag
+    while not game_over_flag:
+        update()  # Update ghost movement
+        draw_ghost()  # Draw the ghost in the new position
+        # Other game updates and rendering
+        glutSwapBuffers()
 
 
 
 
 def keyBoardListerner(key,x,y):
-    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag
+    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,r,g,b
 
     if not game_over_flag:
         if key == b'a':
@@ -470,6 +608,13 @@ def keyBoardListerner(key,x,y):
             pacman_up_flag = True
         elif key==b's':
             pacman_down_flag = True
+
+        if key==b'm':
+            r,g,b = 1,1,1
+            glClearColor(r,g,b,1)
+        if key==b'n':
+            r,g,b = 0,0,0
+            glClearColor(r,g,b,1)
 
 
 def pacman_key_released(key, x, y):
@@ -497,8 +642,12 @@ def MouseListerner(button,state,x,y):
         clicked_y = 250 - y
         print(f"Mouse clicked at OpenGL coordinates: ({clicked_x}, {clicked_y})")
 
+        if 200 < x < 220 and 210 < y < 230:  # Assuming coordinates for the button
+            toggle_theme()
+
         if (-240 <= clicked_x <= -210) and (220 <= clicked_y <= 240):
             restart_button_flag = True
+            restart_game()
             print('Restart!!')
         elif (220 <= clicked_x <= 240) and (220 <= clicked_y <= 240):
             cross_button_flag = True
@@ -506,10 +655,59 @@ def MouseListerner(button,state,x,y):
             play_button_flag = not play_button_flag
 
 
+def restart_game():
+    global pacman_x, pacman_y, score, food, game_over_flag
+    pacman_x = 0
+    pacman_y = 0
+    score = 0
+    food = [(-200,-200),(-180,-200),(-160,-200),(-140,-200),(-120,-200),(-100,-200),
+            (-80,-200),(-60,-200),(-40,-200),(-20,-200),(0,-200),(20,-200),(40,-200),
+            (60,-200),(80,-200),(100,-200),(120,-200),(140,-200),(160,-200),(180,-200),(200,-200),
+            (-200,-180),(-200,-160),(-180,-160),(-160,-160),(-140,-160),(-120,-160),(-120,-140),
+            (-120,-120),(-120,-100),(-120,-80),(-120,-60),(-120,-40),(-120,-20),(-120,0),(-120,20),
+            (-120,40),(-120,60),(-120,80),(-120,100),(-120,120),(-140,120),(-160,120),(-180,120),(-200,120),
+            (-200,140),(-200,160),(-200,180),(-200,200),(-180,200),(-160,200),(-140,200),(-120,200),(-100,200),(-80,200),(-60,200),(-40,200),(-20,200),
+            (-20,180),(-20,160),(-20,120),(-40,120),(-60,120),(-80,120),(-100,120),(0,120),
+            (-40,160),(-60,160),(-80,160),(-100,160),(-120,160),(-140,160),(-160,160),(-180,160),(-130,180),(-70,140),(-50,140),
+            (-140,15),(-160,15),(-180,15),(-200,15),
+            (-100,15),(-80,15),(-60,15),(-80,-5),(-80,-25),(-80,-45),(-80,-65),(-80,-85),
+            (-80,40),(-60,40),(-40,40),(-20,40),(20,40),(40,40),(60,40),
+            (-20,60),(-20,80),(-40,80),(-60,80),(-80,80),
+            (-60,-40),(-40,-40),(-20,-40),(0,-40),(20,-40),(40,-40),(60,-40),
+            (-60,-85),(-40,-85),(-20,-85),(20,-85),(40,-85),(60,-85),
+            (-40,-105),(-40,-125),(40,-105),(40,-125),(-60,-125),(-80,-125),(-100,-125),
+            (-20,-125),(0,-125),(20,-125),(60,-125),(80,-125),(100,-125),
+            (-140,-90),(-160,-90),(-180,-90),(-200,-90),(-200,-110),(-200,-130),(-180,-130),(-160,-130),
+            (140,-90),(160,-90),(180,-90),(200,-90),(200,-110),(200,-130),(180,-130),(160,-130),
+            (-80,-145),(-80,-165),(-60,-165),(-40,-165),(-20,-165),
+            (80,-145),(80,-165),(60,-165),(40,-165),(20,-165),
+            (200,-180),(200,-160),(180,-160),(160,-160),(140,-160),(120,-160),(120,-140),
+            (120,-120),(120,-100),(120,-80),(120,-60),(120,-40),(120,-20),(120,0),(120,20),
+            (120,40),(120,60),(120,80),(120,100),(120,120),(140,120),(160,120),(180,120),(200,120),
+            (200,140),(200,160),(200,180),(200,200),(180,200),(160,200),(140,200),(120,200),(100,200),(80,200),(60,200),(40,200),(20,200),
+            (20,180),(20,160),(20,140),(20,120),(40,120),(60,120),(80,120),(100,120),
+            (40,160),(60,160),(80,160),(100,160),(120,160),(140,160),(160,160),(180,160),(130,180),(70,140),(50,140),
+            (140,15),(160,15),(180,15),(200,15),
+            (100,15),(80,15),(60,15),(80,-5),(80,-25),(80,-45),(80,-65),(80,-85),
+            (80,40),(20,60),(20,80),(40,80),(60,80),(80,80)]
+    game_over_flag = False
+
 
 
 def draw_pacman(x,y,radius):
     glColor3f(1,1,0)
+    MidpointCircle(radius,x,y)
+    for i in range(-radius, radius + 1):  # x-offset
+        for j in range(-radius, radius + 1):  # y-offset
+            # Check if the point lies inside the circle
+            if i**2 + j**2 <= radius**2:
+                glBegin(GL_POINTS)
+                glVertex2f(x + i, y + j)
+                glEnd()
+
+
+def draw_ghost(x,y,radius):
+    glColor3f(1,0,0)
     MidpointCircle(radius,x,y)
     for i in range(-radius, radius + 1):  # x-offset
         for j in range(-radius, radius + 1):  # y-offset
@@ -544,13 +742,26 @@ def iterate():
 
 
 def ShowScreen():
-    global heart1_flag, heart2_flag, heart3_flag
+    global heart1_flag, heart2_flag, heart3_flag, score
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     iterate()
-    draw_maze(maze_walls,size=2)
+    draw_maze(maze_walls,size=5)
     draw_food(food,2)
     draw_pacman(pacman_x, pacman_y, pacman_radius)
+    draw_ghost(5,5,ghost_radius)
+    draw_ghost(82,82,ghost_radius)
+    # if score == 50:
+    #     draw_ghost(50,50,ghost_radius)
+    # if score == 100: 
+    #     draw_ghost(80,80,ghost_radius)
+    # if score == 150:
+    #     draw_ghost(ghost_x,ghost_y,ghost_radius)
+    # if score == 200:
+    #     draw_ghost(ghost_x,ghost_y,ghost_radius)
+
+    if game_over_flag:
+        GameOver()
     if play_button_flag:
         glColor3f(0.95, 0.96, 0.03)
         draw_play_button()
@@ -587,4 +798,5 @@ glutIdleFunc(pacman_move)
 glutMouseFunc(MouseListerner)
 glutKeyboardFunc(keyBoardListerner)
 glutKeyboardUpFunc(pacman_key_released)
+glClearColor(r,g,b,1)
 glutMainLoop()
