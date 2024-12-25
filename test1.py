@@ -1,7 +1,7 @@
 pacman_x = 0
 pacman_y = 0
 pacman_radius = 9
-pacman_speed = 3
+pacman_speed = 4
 pacman_angle = 0
 pacman_up_flag = False
 pacman_down_flag = False
@@ -425,10 +425,11 @@ def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
                 spawn_ghost(-125,10,10,'vertical')
             if score==70:
                 print('Level 3')
+                spawn_ghost(120,-20,10,'vertical')
                 spawn_ghost(0,-200,10,'horizontal')
             if score==130:
                 print('Level 4')
-                spawn_ghost(120,0,10,'vertical')
+                spawn_ghost(72,4,10,'horizontal')
                 spawn_ghost(-125,200,10,'horizontal')
 
             if score==200:
