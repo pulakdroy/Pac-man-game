@@ -414,11 +414,11 @@ food1 = copy.deepcopy(food)
 
 def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
     global score,game_over_flag
-    for i in food[:]:  # Loop over a copy of the list to avoid issues when modifying the list
+    for i in food[:]:  
         x, y = i
         distance = math.sqrt((pacman_x - x) ** 2 + (pacman_y - y) ** 2)
         if distance < food_radius + pacman_radius:
-            food.remove(i)  # Remove the eaten food by value
+            food.remove(i)  
             score += 1
             if score==30:
                 print('Level 2')
