@@ -582,23 +582,17 @@ def MouseListerner(button,state,x,y):
 
 
 def draw_pacman(x, y, radius, angle=0):
-    glColor3f(1, 1, 0)  # Yellow color for Pac-Man
+    glColor3f(1, 1, 0)  
+    mouth_angle = math.radians(35)  
 
-    # Convert the mouth angle to radians
-    mouth_angle = math.radians(35)  # Angle of the open mouth (30 degrees on each side)
-
-    # Calculate start and end angles of the mouth based on Pac-Man's orientation
     start_angle = angle - mouth_angle
     end_angle = angle + mouth_angle
 
-    for i in range(-radius, radius + 1):  # x-offset
-        for j in range(-radius, radius + 1):  # y-offset
-            # Check if the point lies inside the circle
+    for i in range(-radius, radius + 1): 
+        for j in range(-radius, radius + 1): 
             if i**2 + j**2 <= radius**2:
-                # Convert the point to polar coordinates (angle)
                 point_angle = math.atan2(j, i)
 
-                # Check if the point is outside the mouth region
                 if not (start_angle <= point_angle <= end_angle):
                     glBegin(GL_POINTS)
                     glVertex2f(x + i, y + j)
@@ -608,9 +602,6 @@ def draw_pacman(x, y, radius, angle=0):
 
 
 
-
-
-# Global list to store ghost states
 ghosts = []
 
 def spawn_ghost(x, y, size, direction="horizontal"):
@@ -620,8 +611,8 @@ def spawn_ghost(x, y, size, direction="horizontal"):
         "y": y,
         "radius": size,
         "direction": direction,
-        "moving_right": True,  # For horizontal movement
-        "moving_up": True      # For vertical movement
+        "moving_right": True,  
+        "moving_up": True     
     })
 
 
@@ -642,24 +633,24 @@ def move_ghost(ghost, maze_walls):
                 if ghost["moving_right"]:
                     ghost["x"] += movement_speed
                     if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
-                        ghost["x"] -= movement_speed  # Undo movement
-                        ghost["moving_right"] = False  # Reverse direction
+                        ghost["x"] -= movement_speed  
+                        ghost["moving_right"] = False  
                 else:
                     ghost["x"] -= movement_speed
                     if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
-                        ghost["x"] += movement_speed  # Undo movement
-                        ghost["moving_right"] = True  # Reverse direction
+                        ghost["x"] += movement_speed  
+                        ghost["moving_right"] = True  
             elif ghost["direction"] == "vertical":
                 if ghost["moving_up"]:
                     ghost["y"] += movement_speed
                     if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
-                        ghost["y"] -= movement_speed  # Undo movement
-                        ghost["moving_up"] = False  # Reverse direction
+                        ghost["y"] -= movement_speed  
+                        ghost["moving_up"] = False  
                 else:
                     ghost["y"] -= movement_speed
                     if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
-                        ghost["y"] += movement_speed  # Undo movement
-                        ghost["moving_up"] = True  # Reverse direction
+                        ghost["y"] += movement_speed  
+                        ghost["moving_up"] = True  
 
 
 
@@ -679,9 +670,9 @@ def animate_ghosts(maze_walls):
         move_ghost(ghost, maze_walls)
         draw_ghost(ghost["x"], ghost["y"], ghost["radius"])
 
-        # Check for collision with Pac-Man
+        
         if check_pacman_ghost_collision(pacman_x, pacman_y, pacman_radius, ghost["x"], ghost["y"], ghost["radius"]):
-            lives -= 1  # Deduct one life
+            lives -= 1  
             if lives==2:
                 heart3_flag = True
                 print(f"Lives remaining: {lives}")
@@ -699,8 +690,8 @@ def animate_ghosts(maze_walls):
                 print("Game Over!")
                 game_over_flag = True
             else:
-                # Optionally, reset Pac-Man's position after losing a life
-                pacman_x, pacman_y = 0, 0  # Reset Pac-Man to the center
+                
+                pacman_x, pacman_y = 0, 0  #
     
 
 
@@ -769,8 +760,8 @@ def ShowScreen():
         "y": 120,
         "radius": 10,
         "direction": 'horizontal',
-        "moving_right": True,  # For horizontal movement
-        "moving_up": True      # For vertical movement
+        "moving_right": True,  
+        "moving_up": True     
         }))
 
         ghosts.append(({
@@ -778,8 +769,8 @@ def ShowScreen():
         "y": -125,
         "radius": 10,
         "direction": 'horizontal',
-        "moving_right": True,  # For horizontal movement
-        "moving_up": True      # For vertical movement
+        "moving_right": True,  
+        "moving_up": True     
         }))
 
         ghosts.append(({
@@ -787,8 +778,8 @@ def ShowScreen():
         "y": 0,
         "radius": 10,
         "direction": 'vertical',
-        "moving_right": True,  # For horizontal movement
-        "moving_up": True      # For vertical movement
+        "moving_right": True,  
+        "moving_up": True     
         }))
         
         
