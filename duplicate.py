@@ -1,138 +1,133 @@
-from OpenGL.GL import *
-from OpenGL.GLUT import *
-from OpenGL.GLU import *
-import math
-import time
-import copy
-import numpy as np
+
+# import numpy as np
 # import numpy
 # print(numpy.__version__)
 
 
 
-current_screen = "intro"
-current_width = 500
-current_height = 500
+# current_screen = "intro"
+# current_width = 500
+# current_height = 500
 
-def draw_text_with_points(text, x, y, scale=1.0):
-    """Render text using GL_POINTS."""
-    point_size = 2  # Size of each point for rendering text
-    glPointSize(point_size)
+# def draw_text_with_points(text, x, y, scale=1.0):
+    # """Render text using GL_POINTS."""
+    # point_size = 2  # Size of each point for rendering text
+    # glPointSize(point_size)
 
     # Mapping characters to simple dot-matrix representations
     # (Replace this with more complex mapping if needed)
-    char_map = {
-        "P": [
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 1, 1],
-            [1, 0, 0],
-            [1, 0, 0],
-        ],
-        "l": [
-            [1],
-            [1],
-            [1],
-            [1],
-            [1],
-        ],
-        "a": [
-            [0, 1, 0],
-            [1, 0, 1],
-            [1, 1, 1],
-            [1, 0, 1],
-            [1, 0, 1],
-        ],
-        "y": [
-            [1, 0, 1],
-            [1, 0, 1],
-            [0, 1, 0],
-            [0, 1, 0],
-            [0, 1, 0],
-        ],
-    }
+    # char_map = {
+    #     "P": [
+    #         [1, 1, 1],
+    #         [1, 0, 1],
+    #         [1, 1, 1],
+    #         [1, 0, 0],
+    #         [1, 0, 0],
+    #     ],
+    #     "l": [
+    #         [1],
+    #         [1],
+    #         [1],
+    #         [1],
+    #         [1],
+    #     ],
+    #     "a": [
+    #         [0, 1, 0],
+    #         [1, 0, 1],
+    #         [1, 1, 1],
+    #         [1, 0, 1],
+    #         [1, 0, 1],
+    #     ],
+    #     "y": [
+    #         [1, 0, 1],
+    #         [1, 0, 1],
+    #         [0, 1, 0],
+    #         [0, 1, 0],
+    #         [0, 1, 0],
+    #     ],
+    # }
 
-    for c in text:
-        if c in char_map:
-            pattern = char_map[c]
-            for i, row in enumerate(pattern):
-                for j, cell in enumerate(row):
-                    if cell:
-                        # Draw a point for each cell
-                        glBegin(GL_POINTS)
-                        glVertex2f(x + j * 0.05 * scale, y - i * 0.05 * scale)
-                        glEnd()
-        # Move to the next character position
-        x += 0.2 * scale
+    # for c in text:
+    #     if c in char_map:
+    #         pattern = char_map[c]
+    #         for i, row in enumerate(pattern):
+    #             for j, cell in enumerate(row):
+    #                 if cell:
+    #                     # Draw a point for each cell
+    #                     glBegin(GL_POINTS)
+    #                     glVertex2f(x + j * 0.05 * scale, y - i * 0.05 * scale)
+    #                     glEnd()
+    #     # Move to the next character position
+    #     x += 0.2 * scale
 
-def render_intro_screen():
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
+# def render_intro_screen():
+    # glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
 
-    # Render intro text using GL_POINTS
-    draw_text_with_points("Play", -0.1, 0.0, scale=1.0)
+    # # Render intro text using GL_POINTS
+    # draw_text_with_points("Play", -0.1, 0.0, scale=1.0)
 
-    glFlush()
-    glutSwapBuffers()
+    # glFlush()
+    # glutSwapBuffers()
 
 
 # Function to render the game screen
-def render_game_screen():
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
+# def render_game_screen():
+    # glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
 
-    # Example game content (draw a square using points)
-    glPointSize(5)
-    glColor3f(0.0, 0.0, 1.0)  # Blue square (example game element)
-    for x in np.arange(-0.5, 0.5, 0.01):
-        for y in np.arange(-0.5, 0.5, 0.01):
-            glBegin(GL_POINTS)
-            glVertex2f(x, y)
-            glEnd()
+    # # Example game content (draw a square using points)
+    # glPointSize(5)
+    # glColor3f(0.0, 0.0, 1.0)  # Blue square (example game element)
+    # for x in np.arange(-0.5, 0.5, 0.01):
+    #     for y in np.arange(-0.5, 0.5, 0.01):
+    #         glBegin(GL_POINTS)
+    #         glVertex2f(x, y)
+    #         glEnd()
 
-    glFlush()
-    glutSwapBuffers()
+    # glFlush()
+    # glutSwapBuffers()
 
 
 # Mouse click handling for switching screens
-def mouse_click(button, state, x, y):
-    global current_screen
+# def mouse_click(button, state, x, y):
+    # global current_screen
 
-    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
-        # Convert window coordinates to OpenGL coordinates
-        x = x / current_width * 2 - 1
-        y = 1 - y / current_height * 2
+    # if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+    #     # Convert window coordinates to OpenGL coordinates
+    #     x = x / current_width * 2 - 1
+    #     y = 1 - y / current_height * 2
 
-        # Check if the "Play" button is clicked
-        if current_screen == "intro":
-            if -0.2 < x < 0.2 and -0.2 < y < 0.2:  # Button coordinates
-                current_screen = "game"
-                glutPostRedisplay()
+    #     # Check if the "Play" button is clicked
+    #     if current_screen == "intro":
+    #         if -0.2 < x < 0.2 and -0.2 < y < 0.2:  # Button coordinates
+    #             current_screen = "game"
+    #             glutPostRedisplay()
 
 
 # Main display function
-def display():
-    if current_screen == "intro":
-        render_intro_screen()
-    elif current_screen == "game":
-        render_game_screen()
+# def display():
+    # if current_screen == "intro":
+    #     render_intro_screen()
+    # elif current_screen == "game":
+    #     render_game_screen()
 
 
-def main():
-    glutInit()  # Initialize GLUT
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)  # Set display mode
-    glutInitWindowSize(800, 600)  # Set the window size
-    glutInitWindowPosition(100, 100)  # Set the window position
-    glutCreateWindow(b"Game with Intro Screen Using GL_POINTS")  # Create the window
+# def main():
+    # glutInit()  # Initialize GLUT
+    # glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)  # Set display mode
+    # glutInitWindowSize(800, 600)  # Set the window size
+    # glutInitWindowPosition(100, 100)  # Set the window position
+    # glutCreateWindow(b"Game with Intro Screen Using GL_POINTS")  # Create the window
     
-    # Add other initializations here (e.g., display callback)
-    glutDisplayFunc(display)
-    glutMainLoop()
+    # # Add other initializations here (e.g., display callback)
+    # glutDisplayFunc(display)
+    # glutMainLoop()
 
-def display():
-    glClear(GL_COLOR_BUFFER_BIT)  # Clear the screen
-    glFlush()
+# def display():
+    # glClear(GL_COLOR_BUFFER_BIT)  # Clear the screen
+    # glFlush()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+    # main()
 
 pacman_x = 0
 pacman_y = 0
@@ -144,6 +139,12 @@ pacman_down_flag = False
 pacman_left_flag = False
 pacman_right_flag = False
 
+from OpenGL.GL import *
+from OpenGL.GLUT import *
+from OpenGL.GLU import *
+import math
+import time
+import copy
 
 game_over_flag = False
 play_button_flag = False
