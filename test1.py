@@ -8,7 +8,7 @@ pacman_down_flag = False
 pacman_left_flag = False
 pacman_right_flag = False
 
-
+from OpenGL.GLUT import glutBitmapCharacter, GLUT_BITMAP_9_BY_15
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
