@@ -414,11 +414,11 @@ food1 = copy.deepcopy(food)
 
 def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
     global score,game_over_flag
-    for i in food[:]:  # Loop over a copy of the list to avoid issues when modifying the list
+    for i in food[:]:  
         x, y = i
         distance = math.sqrt((pacman_x - x) ** 2 + (pacman_y - y) ** 2)
         if distance < food_radius + pacman_radius:
-            food.remove(i)  # Remove the eaten food by value
+            food.remove(i)  
             score += 1
             if score==30:
                 print('Level 2')
@@ -469,7 +469,7 @@ def draw_food(food,size):
 
 
 def draw_maze(wall_list, size):
-    glColor3f(0.0, 0.0, 1.0)  # Set wall color to blue
+    glColor3f(0.0, 0.0, 1.0)  
     for wall in wall_list:
         wall_type, x_start, y_start, x_end, y_end = wall
         if wall_type == "horizontal":
@@ -577,7 +577,7 @@ def MouseListerner(button,state,x,y):
 
 
 def draw_pacman(x, y, radius, angle=0):
-    glColor3f(1, 1, 0)  # Yellow color for Pac-Man
+    glColor3f(1, 1, 0)  
 
     # Convert the mouth angle to radians
     mouth_angle = math.radians(35)  # Angle of the open mouth (30 degrees on each side)
@@ -603,9 +603,6 @@ def draw_pacman(x, y, radius, angle=0):
 
 
 
-
-
-# Global list to store ghost states
 ghosts = []
 
 def spawn_ghost(x, y, size, direction="horizontal"):
@@ -615,8 +612,8 @@ def spawn_ghost(x, y, size, direction="horizontal"):
         "y": y,
         "radius": size,
         "direction": direction,
-        "moving_right": True,  # For horizontal movement
-        "moving_up": True      # For vertical movement
+        "moving_right": True,  
+        "moving_up": True      
     })
 
 
@@ -629,7 +626,7 @@ def draw_ghost(x, y, radius):
 
 
 def move_ghost(ghost, maze_walls):
-    movement_speed = 5  # Adjust the speed of ghost movement
+    movement_speed = 5  
     if not game_over_flag:
         if not play_button_flag:
 

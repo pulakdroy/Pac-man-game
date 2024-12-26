@@ -1,27 +1,149 @@
-pacman_x = 0
-pacman_y = 0
-pacman_radius = 9
-pacman_speed = 3
-pacman_up_flag = False
-pacman_down_flag = False
-pacman_left_flag = False
-pacman_right_flag = False
-
-
-ghost_x = 0
-ghost_y = 0
-ghost_radius = 9
-ghost_speed = 3
-ghost_left_flag = False
-ghost_right_flag = False
-ghost_up_flag = False
-ghost_down_flag = False
-
 from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 import math
 import time
+import copy
+import numpy as np
+# import numpy
+# print(numpy.__version__)
+
+
+
+current_screen = "intro"
+current_width = 500
+current_height = 500
+
+def draw_text_with_points(text, x, y, scale=1.0):
+    """Render text using GL_POINTS."""
+    point_size = 2  # Size of each point for rendering text
+    glPointSize(point_size)
+
+    # Mapping characters to simple dot-matrix representations
+    # (Replace this with more complex mapping if needed)
+    char_map = {
+        "P": [
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+            [1, 0, 0],
+            [1, 0, 0],
+        ],
+        "l": [
+            [1],
+            [1],
+            [1],
+            [1],
+            [1],
+        ],
+        "a": [
+            [0, 1, 0],
+            [1, 0, 1],
+            [1, 1, 1],
+            [1, 0, 1],
+            [1, 0, 1],
+        ],
+        "y": [
+            [1, 0, 1],
+            [1, 0, 1],
+            [0, 1, 0],
+            [0, 1, 0],
+            [0, 1, 0],
+        ],
+    }
+
+    for c in text:
+        if c in char_map:
+            pattern = char_map[c]
+            for i, row in enumerate(pattern):
+                for j, cell in enumerate(row):
+                    if cell:
+                        # Draw a point for each cell
+                        glBegin(GL_POINTS)
+                        glVertex2f(x + j * 0.05 * scale, y - i * 0.05 * scale)
+                        glEnd()
+        # Move to the next character position
+        x += 0.2 * scale
+
+def render_intro_screen():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
+
+    # Render intro text using GL_POINTS
+    draw_text_with_points("Play", -0.1, 0.0, scale=1.0)
+
+    glFlush()
+    glutSwapBuffers()
+
+
+# Function to render the game screen
+def render_game_screen():
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)  # Clear the screen
+
+    # Example game content (draw a square using points)
+    glPointSize(5)
+    glColor3f(0.0, 0.0, 1.0)  # Blue square (example game element)
+    for x in np.arange(-0.5, 0.5, 0.01):
+        for y in np.arange(-0.5, 0.5, 0.01):
+            glBegin(GL_POINTS)
+            glVertex2f(x, y)
+            glEnd()
+
+    glFlush()
+    glutSwapBuffers()
+
+
+# Mouse click handling for switching screens
+def mouse_click(button, state, x, y):
+    global current_screen
+
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        # Convert window coordinates to OpenGL coordinates
+        x = x / current_width * 2 - 1
+        y = 1 - y / current_height * 2
+
+        # Check if the "Play" button is clicked
+        if current_screen == "intro":
+            if -0.2 < x < 0.2 and -0.2 < y < 0.2:  # Button coordinates
+                current_screen = "game"
+                glutPostRedisplay()
+
+
+# Main display function
+def display():
+    if current_screen == "intro":
+        render_intro_screen()
+    elif current_screen == "game":
+        render_game_screen()
+
+
+def main():
+    glutInit()  # Initialize GLUT
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB)  # Set display mode
+    glutInitWindowSize(800, 600)  # Set the window size
+    glutInitWindowPosition(100, 100)  # Set the window position
+    glutCreateWindow(b"Game with Intro Screen Using GL_POINTS")  # Create the window
+    
+    # Add other initializations here (e.g., display callback)
+    glutDisplayFunc(display)
+    glutMainLoop()
+
+def display():
+    glClear(GL_COLOR_BUFFER_BIT)  # Clear the screen
+    glFlush()
+
+if __name__ == "__main__":
+    main()
+
+pacman_x = 0
+pacman_y = 0
+pacman_radius = 9
+pacman_speed = 4
+pacman_angle = 0
+pacman_up_flag = False
+pacman_down_flag = False
+pacman_left_flag = False
+pacman_right_flag = False
+
 
 game_over_flag = False
 play_button_flag = False
@@ -31,7 +153,8 @@ heart1_flag = False
 heart2_flag = False
 heart3_flag = False
 score = 0
-r,g,b = 0,0,0
+lives = 3
+
 
 
 def drawpoints(x,y,size = 2):
@@ -175,13 +298,6 @@ def Eight_way_symmetry(x0,y0,x1,y1,size):
         coverted_x1,coverted_y1 = convert_to_zone0(zone,x1,y1)
         MidpointLine(zone,coverted_x0,converted_y0,coverted_x1,coverted_y1,size)
 
-def draw_theme_button():
-    # Draw a simple button for theme toggle
-    # Example using Eight-way symmetry (adjust as needed)
-    Eight_way_symmetry(200, 210, 220, 210, 3)  # Draw top-right button (for theme toggle)
-    Eight_way_symmetry(220, 210, 220, 230, 3)
-    Eight_way_symmetry(220, 230, 200, 230, 3)
-    Eight_way_symmetry(200, 230, 200, 210, 3)
 
 
 def draw_play_button():
@@ -288,6 +404,8 @@ def GameOver():
     Eight_way_symmetry(90, 50, 90, 30,2)  
     Eight_way_symmetry(80, 30, 90, 30,2)  
     Eight_way_symmetry(80, 30, 91, 10,2)  
+    glColor3f(1,0,0)
+    draw_cross_button()
 
 
 
@@ -417,6 +535,8 @@ food = [(-200,-200),(-180,-200),(-160,-200),(-140,-200),(-120,-200),(-100,-200),
 
 ]
 
+food1 = copy.deepcopy(food)
+
 
 
 
@@ -429,6 +549,23 @@ def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
         if distance < food_radius + pacman_radius:
             food.remove(i)  # Remove the eaten food by value
             score += 1
+            if score==30:
+                print('Level 2')
+                spawn_ghost(-125,10,10,'vertical')
+            if score==70:
+                print('Level 3')
+                spawn_ghost(120,-20,10,'vertical')
+                spawn_ghost(0,-200,10,'horizontal')
+            if score==130:
+                print('Level 4')
+                spawn_ghost(72,4,10,'horizontal')
+                spawn_ghost(-125,200,10,'horizontal')
+
+            if score==200:
+                print('Level 5')
+                spawn_ghost(25,170,10,'vertical')
+                spawn_ghost(0,-40,10,'horizontal')
+
             if score==227:
                 game_over_flag=True
             return True
@@ -469,29 +606,17 @@ def draw_maze(wall_list, size):
         elif wall_type == "vertical":
             draw_vertical_wall(y_start, y_end, x_start, size)
 
-
 def draw_horizontal_wall(x_start, x_end, y, size):
     Eight_way_symmetry(x_start, y, x_end, y,size)
-
 
 def draw_vertical_wall(y_start, y_end, x, size):
     Eight_way_symmetry(x, y_start, x, y_end,size)
 
 
-current_theme = "day"  # Default theme is day
-
-def toggle_theme():
-    global current_theme
-    if current_theme == "day":
-        current_theme = "night"
-        glClearColor(0.1, 0.1, 0.1, 1.0)  # Set background color to dark for night
-    else:
-        current_theme = "day"
-        glClearColor(1.0, 1.0, 1.0, 1.0)  # Set background color to light for day
 
 
 def pacman_move():
-    global pacman_x, pacman_y,pacman_radius,score,food,play_button_flag
+    global pacman_x, pacman_y,pacman_speed,pacman_radius,score,food,play_button_flag
 
     new_x = pacman_x
     new_y = pacman_y
@@ -512,111 +637,36 @@ def pacman_move():
 
     eat_food(pacman_x,pacman_y,pacman_radius,food)
 
-
-# Movement logic for Ghost
-def move_ghost():
-    global ghost_x, ghost_y, ghost_left_flag, ghost_right_flag, ghost_speed,ghost_up_flag,ghost_down_flag
-
-    # Update position based on flags
-    if ghost_left_flag:
-        ghost_x -= ghost_speed
-    if ghost_right_flag:
-        ghost_x += ghost_speed
-    if ghost_up_flag:
-        ghost_y += ghost_speed
-    if ghost_down_flag:
-        ghost_y -= ghost_speed
-
-    # Ensure the ghost stays within the screen bounds (if needed)
-    if ghost_x < -220:
-        ghost_x = -220  # Left boundary
-        ghost_left_flag = False
-        ghost_right_flag = True
-    elif ghost_x > 220:
-        ghost_x = 220  # Right boundary
-        ghost_left_flag = True
-        ghost_right_flag = False
-
-    if ghost_y < -220:
-        ghost_y = -220  # Bottom boundary
-        ghost_down_flag = False
-        ghost_up_flag = True
-    elif ghost_y > 220:
-        ghost_y = 220  # Top boundary
-        ghost_up_flag = False
-        ghost_down_flag = True
-
-import random
-import time
-
-# Function to randomly change the ghost's direction after a certain interval
-def random_direction():
-    global ghost_left_flag, ghost_right_flag, ghost_up_flag, ghost_down_flag
-    # Randomly choose a new direction for the ghost to move
-    direction = random.choice(['left', 'right', 'up', 'down'])
-
-    if direction == 'left':
-        ghost_left_flag = True
-        ghost_right_flag = False
-        ghost_up_flag = False
-        ghost_down_flag = False
-    elif direction == 'right':
-        ghost_right_flag = True
-        ghost_left_flag = False
-        ghost_up_flag = False
-        ghost_down_flag = False
-    elif direction == 'up':
-        ghost_up_flag = True
-        ghost_down_flag = False
-        ghost_left_flag = False
-        ghost_right_flag = False
-    elif direction == 'down':
-        ghost_down_flag = True
-        ghost_up_flag = False
-        ghost_left_flag = False
-        ghost_right_flag = False
-
-# Call the random_direction function at regular intervals
-def update():
-    global game_over_flag
-    if not game_over_flag:
-        random_direction()
-        move_ghost()
-    # Redraw the screen or do any other updates
-    time.sleep(1)  # Adjust the time to control how often the ghost changes direction
-
-
-def game_loop():
-    global game_over_flag
-    while not game_over_flag:
-        update()  # Update ghost movement
-        draw_ghost()  # Draw the ghost in the new position
-        # Other game updates and rendering
-        glutSwapBuffers()
+ 
 
 
 
 
 def keyBoardListerner(key,x,y):
-    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,r,g,b
+    global game_over_flag,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,pacman_angle
 
     if not game_over_flag:
-        if key == b'a':
+        if not play_button_flag:
+            if key == b'a':
                 pacman_left_flag = True
-                
-        elif key == b'd':
+                pacman_angle = math.radians(180)
+                    
+            elif key == b'd':
                 pacman_right_flag = True
-        elif key==b'w':
-            pacman_up_flag = True
-        elif key==b's':
-            pacman_down_flag = True
+                pacman_angle = math.radians(0)
 
-        if key==b'm':
-            r,g,b = 1,1,1
-            glClearColor(r,g,b,1)
-        if key==b'n':
-            r,g,b = 0,0,0
-            glClearColor(r,g,b,1)
+            elif key==b'w':
+                pacman_up_flag = True
+                pacman_angle = math.radians(90)
+
+            elif key==b's':
+                pacman_down_flag = True
+                pacman_angle = math.radians(270)
+
+            if key==b'm':
+                glClearColor(0.8,0.8,0.8,1)
+            if key==b'n':
+                glClearColor(0,0,0,1)
 
 
 def pacman_key_released(key, x, y):
@@ -644,12 +694,8 @@ def MouseListerner(button,state,x,y):
         clicked_y = 250 - y
         print(f"Mouse clicked at OpenGL coordinates: ({clicked_x}, {clicked_y})")
 
-        if 200 < x < 220 and 210 < y < 230:  # Assuming coordinates for the button
-            toggle_theme()
-
         if (-240 <= clicked_x <= -210) and (220 <= clicked_y <= 240):
             restart_button_flag = True
-            restart_game()
             print('Restart!!')
         elif (220 <= clicked_x <= 240) and (220 <= clicked_y <= 240):
             cross_button_flag = True
@@ -657,68 +703,142 @@ def MouseListerner(button,state,x,y):
             play_button_flag = not play_button_flag
 
 
-def restart_game():
-    global pacman_x, pacman_y, score, food, game_over_flag
-    pacman_x = 0
-    pacman_y = 0
-    score = 0
-    food = [(-200,-200),(-180,-200),(-160,-200),(-140,-200),(-120,-200),(-100,-200),
-            (-80,-200),(-60,-200),(-40,-200),(-20,-200),(0,-200),(20,-200),(40,-200),
-            (60,-200),(80,-200),(100,-200),(120,-200),(140,-200),(160,-200),(180,-200),(200,-200),
-            (-200,-180),(-200,-160),(-180,-160),(-160,-160),(-140,-160),(-120,-160),(-120,-140),
-            (-120,-120),(-120,-100),(-120,-80),(-120,-60),(-120,-40),(-120,-20),(-120,0),(-120,20),
-            (-120,40),(-120,60),(-120,80),(-120,100),(-120,120),(-140,120),(-160,120),(-180,120),(-200,120),
-            (-200,140),(-200,160),(-200,180),(-200,200),(-180,200),(-160,200),(-140,200),(-120,200),(-100,200),(-80,200),(-60,200),(-40,200),(-20,200),
-            (-20,180),(-20,160),(-20,120),(-40,120),(-60,120),(-80,120),(-100,120),(0,120),
-            (-40,160),(-60,160),(-80,160),(-100,160),(-120,160),(-140,160),(-160,160),(-180,160),(-130,180),(-70,140),(-50,140),
-            (-140,15),(-160,15),(-180,15),(-200,15),
-            (-100,15),(-80,15),(-60,15),(-80,-5),(-80,-25),(-80,-45),(-80,-65),(-80,-85),
-            (-80,40),(-60,40),(-40,40),(-20,40),(20,40),(40,40),(60,40),
-            (-20,60),(-20,80),(-40,80),(-60,80),(-80,80),
-            (-60,-40),(-40,-40),(-20,-40),(0,-40),(20,-40),(40,-40),(60,-40),
-            (-60,-85),(-40,-85),(-20,-85),(20,-85),(40,-85),(60,-85),
-            (-40,-105),(-40,-125),(40,-105),(40,-125),(-60,-125),(-80,-125),(-100,-125),
-            (-20,-125),(0,-125),(20,-125),(60,-125),(80,-125),(100,-125),
-            (-140,-90),(-160,-90),(-180,-90),(-200,-90),(-200,-110),(-200,-130),(-180,-130),(-160,-130),
-            (140,-90),(160,-90),(180,-90),(200,-90),(200,-110),(200,-130),(180,-130),(160,-130),
-            (-80,-145),(-80,-165),(-60,-165),(-40,-165),(-20,-165),
-            (80,-145),(80,-165),(60,-165),(40,-165),(20,-165),
-            (200,-180),(200,-160),(180,-160),(160,-160),(140,-160),(120,-160),(120,-140),
-            (120,-120),(120,-100),(120,-80),(120,-60),(120,-40),(120,-20),(120,0),(120,20),
-            (120,40),(120,60),(120,80),(120,100),(120,120),(140,120),(160,120),(180,120),(200,120),
-            (200,140),(200,160),(200,180),(200,200),(180,200),(160,200),(140,200),(120,200),(100,200),(80,200),(60,200),(40,200),(20,200),
-            (20,180),(20,160),(20,140),(20,120),(40,120),(60,120),(80,120),(100,120),
-            (40,160),(60,160),(80,160),(100,160),(120,160),(140,160),(160,160),(180,160),(130,180),(70,140),(50,140),
-            (140,15),(160,15),(180,15),(200,15),
-            (100,15),(80,15),(60,15),(80,-5),(80,-25),(80,-45),(80,-65),(80,-85),
-            (80,40),(20,60),(20,80),(40,80),(60,80),(80,80)]
-    game_over_flag = False
 
 
+def draw_pacman(x, y, radius, angle=0):
+    glColor3f(1, 1, 0)  # Yellow color for Pac-Man
 
-def draw_pacman(x,y,radius):
-    glColor3f(1,1,0)
-    MidpointCircle(radius,x,y)
+    # Convert the mouth angle to radians
+    mouth_angle = math.radians(35)  # Angle of the open mouth (30 degrees on each side)
+
+    # Calculate start and end angles of the mouth based on Pac-Man's orientation
+    start_angle = angle - mouth_angle
+    end_angle = angle + mouth_angle
+
     for i in range(-radius, radius + 1):  # x-offset
         for j in range(-radius, radius + 1):  # y-offset
             # Check if the point lies inside the circle
             if i**2 + j**2 <= radius**2:
-                glBegin(GL_POINTS)
-                glVertex2f(x + i, y + j)
-                glEnd()
+                # Convert the point to polar coordinates (angle)
+                point_angle = math.atan2(j, i)
+
+                # Check if the point is outside the mouth region
+                if not (start_angle <= point_angle <= end_angle):
+                    glBegin(GL_POINTS)
+                    glVertex2f(x + i, y + j)
+                    glEnd()
 
 
-def draw_ghost(x,y,radius):
-    glColor3f(1,0,0)
+
+
+
+
+
+# Global list to store ghost states
+ghosts = []
+
+def spawn_ghost(x, y, size, direction="horizontal"):
+    global ghosts
+    ghosts.append({
+        "x": x,
+        "y": y,
+        "radius": size,
+        "direction": direction,
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+    })
+
+
+
+
+
+def draw_ghost(x, y, radius):
+    glColor3f(1, 0, 0)  
     MidpointCircle(radius,x,y)
-    for i in range(-radius, radius + 1):  # x-offset
-        for j in range(-radius, radius + 1):  # y-offset
-            # Check if the point lies inside the circle
-            if i**2 + j**2 <= radius**2:
-                glBegin(GL_POINTS)
-                glVertex2f(x + i, y + j)
-                glEnd()
 
+
+def move_ghost(ghost, maze_walls):
+    movement_speed = 5  # Adjust the speed of ghost movement
+    if not game_over_flag:
+        if not play_button_flag:
+
+            if ghost["direction"] == "horizontal":
+                if ghost["moving_right"]:
+                    ghost["x"] += movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["x"] -= movement_speed  # Undo movement
+                        ghost["moving_right"] = False  # Reverse direction
+                else:
+                    ghost["x"] -= movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["x"] += movement_speed  # Undo movement
+                        ghost["moving_right"] = True  # Reverse direction
+            elif ghost["direction"] == "vertical":
+                if ghost["moving_up"]:
+                    ghost["y"] += movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["y"] -= movement_speed  # Undo movement
+                        ghost["moving_up"] = False  # Reverse direction
+                else:
+                    ghost["y"] -= movement_speed
+                    if check_wall_collision(ghost["x"], ghost["y"], maze_walls, ghost["radius"]):
+                        ghost["y"] += movement_speed  # Undo movement
+                        ghost["moving_up"] = True  # Reverse direction
+
+
+
+
+def check_pacman_ghost_collision(pacman_x, pacman_y, pacman_radius, ghost_x, ghost_y, ghost_radius):
+    distance = math.sqrt((pacman_x - ghost_x)**2 + (pacman_y - ghost_y)**2)
+    return distance < (pacman_radius + ghost_radius)
+
+
+
+
+
+def animate_ghosts(maze_walls):
+    global ghosts, pacman_x, pacman_y, pacman_radius, lives,heart1_flag,heart2_flag,heart3_flag,game_over_flag
+
+    for ghost in ghosts:
+        move_ghost(ghost, maze_walls)
+        draw_ghost(ghost["x"], ghost["y"], ghost["radius"])
+
+        # Check for collision with Pac-Man
+        if check_pacman_ghost_collision(pacman_x, pacman_y, pacman_radius, ghost["x"], ghost["y"], ghost["radius"]):
+            lives -= 1  # Deduct one life
+            if lives==2:
+                heart3_flag = True
+                print(f"Lives remaining: {lives}")
+            if lives==1:
+                heart2_flag = True
+                heart3_flag = True
+                print(f"Lives remaining: {lives}")
+
+
+            if lives == 0:
+                heart1_flag = True
+                heart2_flag = True
+                heart3_flag = True
+                print(f"Lives remaining: {lives}")
+                print("Game Over!")
+                game_over_flag = True
+            else:
+                # Optionally, reset Pac-Man's position after losing a life
+                pacman_x, pacman_y = 0, 0  # Reset Pac-Man to the center
+    
+
+
+
+
+
+
+
+
+
+
+
+
+                    
 
 def draw_score(score):
    
@@ -728,6 +848,11 @@ def draw_score(score):
     score_str = f"Score: {score}"
     for char in score_str:
         glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(char))  
+
+
+def animate_pacman():
+    global pacman_x, pacman_y, pacman_radius, pacman_angle
+    draw_pacman(pacman_x, pacman_y, pacman_radius, pacman_angle)
 
 def timer(value):
     glutPostRedisplay()
@@ -741,29 +866,74 @@ def iterate():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
+spawn_ghost(-10,120,10,'horizontal')
+spawn_ghost(40,-125,10,'horizontal')
+spawn_ghost(-80,0,10,'vertical')
 
 
 def ShowScreen():
-    global heart1_flag, heart2_flag, heart3_flag, score
+    global heart1_flag, heart2_flag, heart3_flag,pacman_x,pacman_y,pacman_angle,score,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,game_over_flag,play_button_flag,cross_button_flag,restart_button_flag,food1,food,lives,ghosts
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     iterate()
+
+    animate_ghosts(maze_walls)
     draw_maze(maze_walls,size=5)
     draw_food(food,2)
-    draw_pacman(pacman_x, pacman_y, pacman_radius)
-    draw_ghost(5,5,ghost_radius)
-    draw_ghost(82,82,ghost_radius)
-    # if score == 50:
-    #     draw_ghost(50,50,ghost_radius)
-    # if score == 100: 
-    #     draw_ghost(80,80,ghost_radius)
-    # if score == 150:
-    #     draw_ghost(ghost_x,ghost_y,ghost_radius)
-    # if score == 200:
-    #     draw_ghost(ghost_x,ghost_y,ghost_radius)
+    animate_pacman()
+    if restart_button_flag:
+        ghosts=[]
+        ghosts.append(({
+        "x": -10,
+        "y": 120,
+        "radius": 10,
+        "direction": 'horizontal',
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+        }))
 
+        ghosts.append(({
+        "x": 40,
+        "y": -125,
+        "radius": 10,
+        "direction": 'horizontal',
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+        }))
+
+        ghosts.append(({
+        "x": -80,
+        "y": 0,
+        "radius": 10,
+        "direction": 'vertical',
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
+        }))
+        
+        
+
+        print('Start Over!!')
+        food = copy.deepcopy(food1)
+        pacman_x=0
+        pacman_y=0
+        pacman_angle=0
+        score = 0
+        lives = 3
+        pacman_up_flag = False
+        pacman_down_flag = False
+        pacman_left_flag = False    
+        pacman_right_flag = False
+
+        game_over_flag = False
+        play_button_flag = False
+        cross_button_flag = False
+        restart_button_flag = False
+        heart1_flag = False
+        heart2_flag = False
+        heart3_flag = False
     if game_over_flag:
         GameOver()
+
     if play_button_flag:
         glColor3f(0.95, 0.96, 0.03)
         draw_play_button()
@@ -772,16 +942,22 @@ def ShowScreen():
         draw_pause_button()
     
     if cross_button_flag:
-        draw_cross_button()
         print("GOODBYE..")
         glutLeaveMainLoop()
+
+        
     draw_score(score)
-    heart1()
-    heart2()
-    heart3()
+    if not heart1_flag:
+        heart1()
+    if not heart2_flag:
+        heart2()
+    if not heart3_flag:
+        heart3()
+    glColor3f(1,0,0)
     draw_cross_button()
     glColor3f(1,1,0)
     glColor3f(0,1,1)
+
     draw_restart_button()
     glutSwapBuffers()
     glutPostRedisplay()
@@ -800,5 +976,5 @@ glutIdleFunc(pacman_move)
 glutMouseFunc(MouseListerner)
 glutKeyboardFunc(keyBoardListerner)
 glutKeyboardUpFunc(pacman_key_released)
-glClearColor(r,g,b,1)
+glClearColor(0,0,0,1)
 glutMainLoop()
