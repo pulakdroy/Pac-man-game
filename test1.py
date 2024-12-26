@@ -414,11 +414,11 @@ food1 = copy.deepcopy(food)
 
 def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
     global score,game_over_flag
-    for i in food[:]:  
+    for i in food[:]:  # Loop over a copy of the list to avoid issues when modifying the list
         x, y = i
         distance = math.sqrt((pacman_x - x) ** 2 + (pacman_y - y) ** 2)
         if distance < food_radius + pacman_radius:
-            food.remove(i)  
+            food.remove(i)  # Remove the eaten food by value
             score += 1
             if score==30:
                 print('Level 2')
@@ -469,7 +469,7 @@ def draw_food(food,size):
 
 
 def draw_maze(wall_list, size):
-    glColor3f(0.0, 0.0, 1.0)  
+    glColor3f(0.0, 0.0, 1.0)  # Set wall color to blue
     for wall in wall_list:
         wall_type, x_start, y_start, x_end, y_end = wall
         if wall_type == "horizontal":
@@ -577,23 +577,16 @@ def MouseListerner(button,state,x,y):
 
 
 def draw_pacman(x, y, radius, angle=0):
-    glColor3f(1, 1, 0)  
+    glColor3f(1, 1, 0)  # Yellow color for Pac-Man
 
-    # Convert the mouth angle to radians
-    mouth_angle = math.radians(35)  # Angle of the open mouth (30 degrees on each side)
-
-    # Calculate start and end angles of the mouth based on Pac-Man's orientation
+    mouth_angle = math.radians(35)  
     start_angle = angle - mouth_angle
     end_angle = angle + mouth_angle
 
-    for i in range(-radius, radius + 1):  # x-offset
-        for j in range(-radius, radius + 1):  # y-offset
-            # Check if the point lies inside the circle
+    for i in range(-radius, radius + 1): 
+        for j in range(-radius, radius + 1):  
             if i**2 + j**2 <= radius**2:
-                # Convert the point to polar coordinates (angle)
                 point_angle = math.atan2(j, i)
-
-                # Check if the point is outside the mouth region
                 if not (start_angle <= point_angle <= end_angle):
                     glBegin(GL_POINTS)
                     glVertex2f(x + i, y + j)
@@ -603,6 +596,9 @@ def draw_pacman(x, y, radius, angle=0):
 
 
 
+
+
+# Global list to store ghost states
 ghosts = []
 
 def spawn_ghost(x, y, size, direction="horizontal"):
@@ -612,8 +608,8 @@ def spawn_ghost(x, y, size, direction="horizontal"):
         "y": y,
         "radius": size,
         "direction": direction,
-        "moving_right": True,  
-        "moving_up": True      
+        "moving_right": True,  # For horizontal movement
+        "moving_up": True      # For vertical movement
     })
 
 
@@ -626,7 +622,7 @@ def draw_ghost(x, y, radius):
 
 
 def move_ghost(ghost, maze_walls):
-    movement_speed = 5  
+    movement_speed = 5  # Adjust the speed of ghost movement
     if not game_over_flag:
         if not play_button_flag:
 
