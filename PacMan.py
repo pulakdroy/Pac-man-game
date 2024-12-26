@@ -25,6 +25,7 @@ heart2_flag = False
 heart3_flag = False
 score = 0
 lives = 3
+level = 1
 
 
 
@@ -413,7 +414,7 @@ food1 = copy.deepcopy(food)
 
 
 def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
-    global score,game_over_flag
+    global score,game_over_flag,level
     for i in food[:]:  # Loop over a copy of the list to avoid issues when modifying the list
         x, y = i
         distance = math.sqrt((pacman_x - x) ** 2 + (pacman_y - y) ** 2)
@@ -421,20 +422,24 @@ def eat_food(pacman_x, pacman_y, pacman_radius, food, food_radius=2):
             food.remove(i)  # Remove the eaten food by value
             score += 1
             if score==30:
+                level += 1
                 print('Level 2')
                 spawn_ghost(-125,10,10,'vertical')
             if score==70:
+                level += 1
                 print('Level 3')
                 spawn_ghost(120,-20,10,'vertical')
                 spawn_ghost(0,-200,10,'horizontal')
-            if score==130:
-                print('Level 4')
                 spawn_ghost(72,4,10,'horizontal')
+            if score==130:
+                level += 1
+                print('Level 4')
                 spawn_ghost(-125,200,10,'horizontal')
+                spawn_ghost(25,170,10,'vertical')
 
             if score==200:
-                print('Level 5')
-                spawn_ghost(25,170,10,'vertical')
+                level += 1
+                print('Level 5')    
                 spawn_ghost(0,-40,10,'horizontal')
 
             if score==227:
@@ -703,8 +708,13 @@ def animate_ghosts(maze_walls):
 
 
 
-
-
+def draw_level(level):
+    glColor3f(1, 0, 1) 
+    glRasterPos2f(-30, -240) 
+    
+    level_str = f"Level: {level}"
+    for char in level_str:
+        glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(char))  
 
 
 
@@ -716,8 +726,8 @@ def draw_score(score):
     glColor3f(0.0, 1.0, 0.0) 
     glRasterPos2f(100, 230) 
     
-    score_str = f"Score: {score}"
-    for char in score_str:
+    level_str = f"Score: {score}"
+    for char in level_str:
         glutBitmapCharacter(GLUT_BITMAP_9_BY_15, ord(char))  
 
 
@@ -743,7 +753,7 @@ spawn_ghost(-80,0,10,'vertical')
 
 
 def ShowScreen():
-    global heart1_flag, heart2_flag, heart3_flag,pacman_x,pacman_y,pacman_angle,score,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,game_over_flag,play_button_flag,cross_button_flag,restart_button_flag,food1,food,lives,ghosts
+    global heart1_flag, heart2_flag, heart3_flag,pacman_x,pacman_y,pacman_angle,score,pacman_up_flag,pacman_down_flag,pacman_left_flag,pacman_right_flag,game_over_flag,play_button_flag,cross_button_flag,restart_button_flag,food1,food,lives,ghosts,level
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
     iterate()
@@ -816,8 +826,9 @@ def ShowScreen():
         print("GOODBYE..")
         glutLeaveMainLoop()
 
-        
+    draw_level(level)
     draw_score(score)
+    
     if not heart1_flag:
         heart1()
     if not heart2_flag:
